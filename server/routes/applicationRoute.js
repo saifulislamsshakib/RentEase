@@ -17,7 +17,6 @@ import {
 
 const router = express.Router();
 
-// Get My Applications - Tenant
 router.get(
   "/my-applications",
   isAuthenticated,
@@ -25,7 +24,6 @@ router.get(
   getMyApplications,
 );
 
-// Get Property Applications - Owner
 router.get(
   "/property/:propertyId",
   isAuthenticated,
@@ -33,7 +31,6 @@ router.get(
   getPropertyApplications,
 );
 
-// Get All Applications for Owner's Properties
 router.get(
   "/owner/applications",
   isAuthenticated,
@@ -41,7 +38,6 @@ router.get(
   getOwnerApplications,
 );
 
-// Apply for Property - Tenant
 router.post(
   "/create/:propertyId",
   isAuthenticated,
@@ -49,7 +45,6 @@ router.post(
   createApplication,
 );
 
-// Approve or Reject Application - Owner
 router.put(
   "/:applicationId/status",
   isAuthenticated,
@@ -57,14 +52,13 @@ router.put(
   updateApplicationStatus,
 );
 
-// Cancel Application - Tenant
 router.put(
   "/:applicationId/cancel",
   isAuthenticated,
   authorizeRoles("tenant"),
   cancelApplication,
 );
-// Get All Applications - Admin
+
 router.get(
   "/admin/applications",
   isAuthenticated,

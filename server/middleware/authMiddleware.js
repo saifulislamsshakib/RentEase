@@ -5,7 +5,6 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    // Check token
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
@@ -15,10 +14,8 @@ export const isAuthenticated = async (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find user from database
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -28,7 +25,6 @@ export const isAuthenticated = async (req, res, next) => {
       });
     }
 
-    // Check if user is blocked
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
@@ -36,7 +32,6 @@ export const isAuthenticated = async (req, res, next) => {
       });
     }
 
-    // Attach user to request
     req.user = user;
 
     next();

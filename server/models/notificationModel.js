@@ -2,14 +2,12 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
   {
-    // যে user notification পাবে
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // Notification কে তৈরি করেছে
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

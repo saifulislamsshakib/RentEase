@@ -5,7 +5,7 @@ import Contract from "../models/contractModel.js";
 import Payment from "../models/paymentModel.js";
 import Maintenance from "../models/maintenanceModel.js";
 import Complaint from "../models/complaintModel.js";
-// Get All Users - Admin
+// Get All Users for admin
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
@@ -27,7 +27,7 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Block or Unblock User - Admin
+// Block or Unblock User by Admin
 export const toggleUserStatus = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -49,7 +49,6 @@ export const toggleUserStatus = async (req, res) => {
       });
     }
 
-    // Toggle status
     user.isActive = !user.isActive;
 
     await user.save();
@@ -77,7 +76,7 @@ export const toggleUserStatus = async (req, res) => {
   }
 };
 
-// Get Single User - Admin
+// single user get korar code
 export const getSingleUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -107,7 +106,7 @@ export const getSingleUser = async (req, res) => {
   }
 };
 
-// Delete User - Admin
+// Delete User by  Admin
 export const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -121,7 +120,7 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    // Prevent admin from deleting own account
+    // admin cant delete their own account
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -153,7 +152,7 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// Get All Properties - Admin
+// Get All Properties by Admin
 export const getAllPropertiesAdmin = async (req, res) => {
   try {
     const properties = await Property.find()
@@ -175,7 +174,7 @@ export const getAllPropertiesAdmin = async (req, res) => {
   }
 };
 
-// Get All Applications - Admin
+// Get All Applications by Admin
 export const getAllApplicationsAdmin = async (req, res) => {
   try {
     const applications = await Application.find()
@@ -197,15 +196,11 @@ export const getAllApplicationsAdmin = async (req, res) => {
     });
   }
 };
-// =====================================================
+
 // ADMIN REPORTS & ANALYTICS
-// =====================================================
 
 export const getAdminReports = async (req, res) => {
   try {
-    // =========================
-    // USERS
-    // =========================
     const [totalUsers, activeUsers, inactiveUsers, owners, tenants, admins] =
       await Promise.all([
         User.countDocuments(),
@@ -216,9 +211,6 @@ export const getAdminReports = async (req, res) => {
         User.countDocuments({ role: "admin" }),
       ]);
 
-    // =========================
-    // PROPERTIES
-    // =========================
     const [totalProperties, availableProperties, occupiedProperties] =
       await Promise.all([
         Property.countDocuments(),
@@ -226,9 +218,6 @@ export const getAdminReports = async (req, res) => {
         Property.countDocuments({ isAvailable: false }),
       ]);
 
-    // =========================
-    // APPLICATIONS
-    // =========================
     const [
       totalApplications,
       pendingApplications,
@@ -243,9 +232,6 @@ export const getAdminReports = async (req, res) => {
       Application.countDocuments({ status: "cancelled" }),
     ]);
 
-    // =========================
-    // CONTRACTS
-    // =========================
     const [
       totalContracts,
       pendingDepositContracts,
@@ -262,9 +248,6 @@ export const getAdminReports = async (req, res) => {
       Contract.countDocuments({ status: "Terminated" }),
     ]);
 
-    // =========================
-    // PAYMENTS
-    // =========================
     const [
       totalPayments,
       paidPayments,
@@ -283,9 +266,6 @@ export const getAdminReports = async (req, res) => {
       Payment.countDocuments({ type: "rent" }),
     ]);
 
-    // =========================
-    // PAYMENT AMOUNTS
-    // =========================
     const paymentAmountStats = await Payment.aggregate([
       {
         $group: {
@@ -304,9 +284,6 @@ export const getAdminReports = async (req, res) => {
     const overdueAmount =
       paymentAmountStats.find((item) => item._id === "overdue")?.total || 0;
 
-    // =========================
-    // MAINTENANCE
-    // =========================
     const [
       totalMaintenance,
       pendingMaintenance,
@@ -321,9 +298,6 @@ export const getAdminReports = async (req, res) => {
       Maintenance.countDocuments({ status: "Closed" }),
     ]);
 
-    // =========================
-    // COMPLAINTS
-    // =========================
     const [
       totalComplaints,
       pendingComplaints,
@@ -337,10 +311,6 @@ export const getAdminReports = async (req, res) => {
       Complaint.countDocuments({ status: "Resolved" }),
       Complaint.countDocuments({ status: "Closed" }),
     ]);
-
-    // =========================
-    // RESPONSE
-    // =========================
 
     res.status(200).json({
       success: true,

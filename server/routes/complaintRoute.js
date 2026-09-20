@@ -15,7 +15,6 @@ import {
 
 const router = express.Router();
 
-// Tenant - create complaint
 router.post(
   "/create/:propertyId",
   isAuthenticated,
@@ -23,10 +22,8 @@ router.post(
   createComplaint,
 );
 
-// Tenant - my complaints
 router.get("/my", isAuthenticated, authorizeRoles("tenant"), getMyComplaints);
 
-// Owner - complaints
 router.get(
   "/owner",
   isAuthenticated,
@@ -34,7 +31,6 @@ router.get(
   getOwnerComplaints,
 );
 
-// Owner/Admin - update complaint status
 router.put(
   "/:complaintId/status",
   isAuthenticated,
@@ -42,7 +38,6 @@ router.put(
   updateComplaintStatus,
 );
 
-// Admin - all complaints
 router.get(
   "/admin",
   isAuthenticated,

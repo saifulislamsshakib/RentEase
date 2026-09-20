@@ -17,7 +17,6 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-// Tenant - create maintenance request
 router.post(
   "/create/:propertyId",
   isAuthenticated,
@@ -26,10 +25,8 @@ router.post(
   createMaintenance,
 );
 
-// Tenant - my maintenance requests
 router.get("/my", isAuthenticated, authorizeRoles("tenant"), getMyMaintenance);
 
-// Owner - maintenance requests
 router.get(
   "/owner",
   isAuthenticated,
@@ -37,7 +34,6 @@ router.get(
   getOwnerMaintenance,
 );
 
-// Owner - update maintenance status
 router.put(
   "/:maintenanceId/status",
   isAuthenticated,
@@ -45,7 +41,6 @@ router.put(
   updateMaintenanceStatus,
 );
 
-// Admin - all maintenance requests
 router.get(
   "/admin",
   isAuthenticated,

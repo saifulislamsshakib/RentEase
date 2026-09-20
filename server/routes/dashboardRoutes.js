@@ -13,14 +13,12 @@ import {
 
 const router = express.Router();
 
-// Admin Dashboard Statistics
 router.get(
   "/admin",
   isAuthenticated,
   authorizeRoles("admin"),
   getAdminDashboardStats,
 );
-// Owner Dashboard Statistics
 
 router.get(
   "/owner",
@@ -28,7 +26,7 @@ router.get(
   authorizeRoles("owner"),
   getOwnerDashboardStats,
 );
-// Tenant Dashboard Statistics
+
 router.get(
   "/tenant",
   isAuthenticated,

@@ -20,7 +20,6 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-// Create Property With Images - Owner
 router.post(
   "/create",
   isAuthenticated,
@@ -29,10 +28,8 @@ router.post(
   createProperty,
 );
 
-// Get All Properties - Public
 router.get("/", getAllProperties);
 
-// Get All Properties - Admin
 router.get(
   "/admin/all",
   isAuthenticated,
@@ -40,7 +37,6 @@ router.get(
   getAllPropertiesAdmin,
 );
 
-// Get My Properties - Owner
 router.get(
   "/my-properties",
   isAuthenticated,
@@ -48,10 +44,8 @@ router.get(
   getMyProperties,
 );
 
-// Get Single Property - Public
 router.get("/:id", getSingleProperty);
 
-// Update Property With Images - Owner
 router.put(
   "/:id",
   isAuthenticated,
@@ -60,7 +54,6 @@ router.put(
   updateProperty,
 );
 
-// Delete Property Image - Owner
 router.delete(
   "/:id/image",
   isAuthenticated,
@@ -68,7 +61,6 @@ router.delete(
   deletePropertyImage,
 );
 
-// Delete Property - Owner
 router.delete("/:id", isAuthenticated, authorizeRoles("owner"), deleteProperty);
 
 export default router;

@@ -17,10 +17,6 @@ import {
 
 const router = express.Router();
 
-// =====================================================
-// USERS
-// =====================================================
-
 router.get("/users", isAuthenticated, authorizeRoles("admin"), getAllUsers);
 
 router.get(
@@ -44,10 +40,6 @@ router.delete(
   deleteUser,
 );
 
-// =====================================================
-// PROPERTIES
-// =====================================================
-
 router.get(
   "/properties",
   isAuthenticated,
@@ -55,20 +47,12 @@ router.get(
   getAllPropertiesAdmin,
 );
 
-// =====================================================
-// APPLICATIONS
-// =====================================================
-
 router.get(
   "/applications",
   isAuthenticated,
   authorizeRoles("admin"),
   getAllApplicationsAdmin,
 );
-
-// =====================================================
-// REPORTS & ANALYTICS
-// =====================================================
 
 router.get(
   "/reports",

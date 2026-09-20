@@ -2,19 +2,11 @@ import Application from "../models/applicationModel.js";
 import Property from "../models/propertyModel.js";
 import { createNotification } from "./notificationController.js";
 
-// =====================================================
-// CREATE APPLICATION - TENANT
-// =====================================================
-
 export const createApplication = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
     const { preferredStartDate, rentalDuration, message } = req.body;
-
-    // -------------------------------------------------
-    // Validate required fields
-    // -------------------------------------------------
 
     if (!preferredStartDate) {
       return res.status(400).json({
@@ -39,10 +31,6 @@ export const createApplication = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Validate date
-    // -------------------------------------------------
-
     const startDate = new Date(preferredStartDate);
 
     if (Number.isNaN(startDate.getTime())) {
@@ -51,10 +39,6 @@ export const createApplication = async (req, res) => {
         message: "Invalid preferred start date",
       });
     }
-
-    // -------------------------------------------------
-    // Check property exists
-    // -------------------------------------------------
 
     const property = await Property.findById(propertyId);
 
@@ -65,10 +49,6 @@ export const createApplication = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Check property availability
-    // -------------------------------------------------
-
     if (!property.isAvailable) {
       return res.status(400).json({
         success: false,
@@ -76,18 +56,10 @@ export const createApplication = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Check existing application
-    // -------------------------------------------------
-
     const existingApplication = await Application.findOne({
       property: propertyId,
       tenant: req.user._id,
     });
-
-    // -------------------------------------------------
-    // Pending or approved application already exists
-    // -------------------------------------------------
 
     if (
       existingApplication &&
@@ -98,10 +70,6 @@ export const createApplication = async (req, res) => {
         message: "You already have an active application for this property",
       });
     }
-
-    // -------------------------------------------------
-    // Reuse rejected/cancelled application
-    // -------------------------------------------------
 
     if (
       existingApplication &&
@@ -114,7 +82,6 @@ export const createApplication = async (req, res) => {
 
       await existingApplication.save();
 
-      // Notify owner
       await createNotification({
         recipient: property.owner,
         sender: req.user._id,
@@ -131,10 +98,6 @@ export const createApplication = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Create new application
-    // -------------------------------------------------
-
     const application = await Application.create({
       property: propertyId,
       tenant: req.user._id,
@@ -142,10 +105,6 @@ export const createApplication = async (req, res) => {
       rentalDuration: duration,
       message: message?.trim() || "",
     });
-
-    // -------------------------------------------------
-    // Notify property owner
-    // -------------------------------------------------
 
     await createNotification({
       recipient: property.owner,
@@ -155,10 +114,6 @@ export const createApplication = async (req, res) => {
       property: property._id,
       application: application._id,
     });
-
-    // -------------------------------------------------
-    // Response
-    // -------------------------------------------------
 
     return res.status(201).json({
       success: true,
@@ -174,10 +129,6 @@ export const createApplication = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// GET MY APPLICATIONS - TENANT
-// =====================================================
 
 export const getMyApplications = async (req, res) => {
   try {
@@ -205,15 +156,10 @@ export const getMyApplications = async (req, res) => {
   }
 };
 
-// =====================================================
-// GET APPLICATIONS FOR A PROPERTY - OWNER
-// =====================================================
-
 export const getPropertyApplications = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    // Find property
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -223,7 +169,6 @@ export const getPropertyApplications = async (req, res) => {
       });
     }
 
-    // Check owner
     if (property.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -231,7 +176,6 @@ export const getPropertyApplications = async (req, res) => {
       });
     }
 
-    // Get applications
     const applications = await Application.find({
       property: propertyId,
     })
@@ -253,16 +197,11 @@ export const getPropertyApplications = async (req, res) => {
   }
 };
 
-// =====================================================
-// UPDATE APPLICATION STATUS - OWNER
-// =====================================================
-
 export const updateApplicationStatus = async (req, res) => {
   try {
     const { applicationId } = req.params;
     const { status } = req.body;
 
-    // Validate status
     if (!["approved", "rejected"].includes(status)) {
       return res.status(400).json({
         success: false,
@@ -270,7 +209,6 @@ export const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    // Find application
     const application = await Application.findById(applicationId);
 
     if (!application) {
@@ -376,21 +314,14 @@ export const updateApplicationStatus = async (req, res) => {
   }
 };
 
-// =====================================================
-// GET OWNER APPLICATIONS
-// =====================================================
-
 export const getOwnerApplications = async (req, res) => {
   try {
-    // Find owner's properties
     const properties = await Property.find({
       owner: req.user._id,
     });
 
-    // Property IDs
     const propertyIds = properties.map((property) => property._id);
 
-    // Find applications
     const applications = await Application.find({
       property: { $in: propertyIds },
     })
@@ -413,15 +344,10 @@ export const getOwnerApplications = async (req, res) => {
   }
 };
 
-// =====================================================
-// CANCEL APPLICATION - TENANT
-// =====================================================
-
 export const cancelApplication = async (req, res) => {
   try {
     const { applicationId } = req.params;
 
-    // Find application
     const application = await Application.findById(applicationId);
 
     if (!application) {
@@ -431,7 +357,6 @@ export const cancelApplication = async (req, res) => {
       });
     }
 
-    // Check tenant
     if (application.tenant.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -439,7 +364,6 @@ export const cancelApplication = async (req, res) => {
       });
     }
 
-    // Only pending applications
     if (application.status !== "pending") {
       return res.status(400).json({
         success: false,
@@ -447,7 +371,6 @@ export const cancelApplication = async (req, res) => {
       });
     }
 
-    // Cancel
     application.status = "cancelled";
 
     await application.save();
@@ -466,10 +389,6 @@ export const cancelApplication = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// GET ALL APPLICATIONS - ADMIN
-// =====================================================
 
 export const getAllApplications = async (req, res) => {
   try {

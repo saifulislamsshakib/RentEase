@@ -94,6 +94,7 @@ import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerApplications from "./pages/owner/Applications";
 import OwnerBookings from "./pages/owner/Bookings";
 import CreateProperty from "./pages/owner/CreateProperty";
+import MyProperties from "./pages/owner/MyProperties";
 import EditProperty from "./pages/owner/EditProperty";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -180,6 +181,7 @@ function App() {
         <Route path="/owner/bookings" element={<OwnerBookings />} />
 
         <Route path="/owner/properties/create" element={<CreateProperty />} />
+        <Route path="/owner/properties" element={<MyProperties />} />
 
         <Route path="/owner/properties/edit/:id" element={<EditProperty />} />
         <Route path="/owner/contracts" element={<OwnerContracts />} />

@@ -14,17 +14,14 @@ import {
 
 const router = express.Router();
 
-// Get Reviews for Property
 router.get("/property/:propertyId", getPropertyReviews);
 
-// Create Review - Tenant
 router.post(
   "/:propertyId",
   isAuthenticated,
   authorizeRoles("tenant"),
   createReview,
 );
-// Update Own Review - Tenant
 
 router.put(
   "/:reviewId",
@@ -32,7 +29,6 @@ router.put(
   authorizeRoles("tenant"),
   updateReview,
 );
-// Delete Own Review - Tenant
 
 router.delete(
   "/:reviewId",

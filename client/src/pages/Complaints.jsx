@@ -37,8 +37,6 @@ const Complaints = () => {
     priority: "Medium",
   });
 
-  // ================= FETCH ACTIVE CONTRACTS =================
-
   const fetchContracts = async () => {
     try {
       setLoadingContracts(true);
@@ -75,8 +73,6 @@ const Complaints = () => {
     }
   };
 
-  // ================= FETCH COMPLAINTS =================
-
   const fetchComplaints = async () => {
     try {
       setLoading(true);
@@ -98,16 +94,12 @@ const Complaints = () => {
     fetchComplaints();
   }, []);
 
-  // ================= FORM CHANGE =================
-
   const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
   };
-
-  // ================= SUBMIT =================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,8 +154,6 @@ const Complaints = () => {
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* ================= HEADER ================= */}
-
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             Tenant Portal
@@ -175,8 +165,6 @@ const Complaints = () => {
             Submit and track your rental-related complaints.
           </p>
         </div>
-
-        {/* ================= ALERTS ================= */}
 
         {error && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -191,8 +179,6 @@ const Complaints = () => {
         )}
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* ================= CREATE COMPLAINT ================= */}
-
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-slate-900">
@@ -223,8 +209,6 @@ const Complaints = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* ================= PROPERTY ================= */}
-
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Select Property
@@ -268,8 +252,6 @@ const Complaints = () => {
                   </p>
                 </div>
 
-                {/* ================= SUBJECT ================= */}
-
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Subject
@@ -284,8 +266,6 @@ const Complaints = () => {
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
-
-                {/* ================= DESCRIPTION ================= */}
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -302,8 +282,6 @@ const Complaints = () => {
                   />
                 </div>
 
-                {/* ================= DATE ================= */}
-
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Complaint Date
@@ -317,8 +295,6 @@ const Complaints = () => {
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
-
-                {/* ================= PRIORITY ================= */}
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -339,8 +315,6 @@ const Complaints = () => {
                   </select>
                 </div>
 
-                {/* ================= SUBMIT ================= */}
-
                 <button
                   type="submit"
                   disabled={submitting}
@@ -351,8 +325,6 @@ const Complaints = () => {
               </form>
             )}
           </div>
-
-          {/* ================= COMPLAINT HISTORY ================= */}
 
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center justify-between">
@@ -374,15 +346,11 @@ const Complaints = () => {
               </button>
             </div>
 
-            {/* ================= LOADING ================= */}
-
             {loading ? (
               <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
                 <p className="text-slate-500">Loading complaints...</p>
               </div>
             ) : complaints.length === 0 ? (
-              /* ================= EMPTY ================= */
-
               <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-2xl">
                   💬
@@ -397,16 +365,12 @@ const Complaints = () => {
                 </p>
               </div>
             ) : (
-              /* ================= LIST ================= */
-
               <div className="space-y-5">
                 {complaints.map((complaint) => (
                   <div
                     key={complaint._id}
                     className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
                   >
-                    {/* ================= TOP ================= */}
-
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">
@@ -439,8 +403,6 @@ const Complaints = () => {
                       </div>
                     </div>
 
-                    {/* ================= DETAILS ================= */}
-
                     <div className="mt-5 grid gap-4 border-y border-slate-100 py-5 sm:grid-cols-2">
                       <div>
                         <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -469,8 +431,6 @@ const Complaints = () => {
                       </div>
                     </div>
 
-                    {/* ================= DESCRIPTION ================= */}
-
                     <div>
                       <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
                         Description
@@ -480,8 +440,6 @@ const Complaints = () => {
                         {complaint.description}
                       </p>
                     </div>
-
-                    {/* ================= OWNER RESPONSE ================= */}
 
                     {complaint.ownerNote && (
                       <div className="mt-5 rounded-xl bg-blue-50 p-4">

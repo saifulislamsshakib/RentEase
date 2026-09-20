@@ -3,7 +3,6 @@ import Contract from "../models/contractModel.js";
 import Property from "../models/propertyModel.js";
 import { createNotification } from "./notificationController.js";
 
-// Create complaint
 export const createComplaint = async (req, res) => {
   try {
     const { propertyId } = req.params;
@@ -17,7 +16,6 @@ export const createComplaint = async (req, res) => {
       });
     }
 
-    // Check property
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -27,7 +25,6 @@ export const createComplaint = async (req, res) => {
       });
     }
 
-    // Tenant must have active contract
     const contract = await Contract.findOne({
       property: propertyId,
       tenant: req.user._id,
@@ -60,7 +57,6 @@ export const createComplaint = async (req, res) => {
       .populate("tenant", "name email")
       .populate("owner", "name email");
 
-    // Notify owner
     try {
       await createNotification({
         recipient: contract.owner._id,
@@ -88,7 +84,6 @@ export const createComplaint = async (req, res) => {
   }
 };
 
-// Get tenant complaints
 export const getMyComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.find({
@@ -113,7 +108,6 @@ export const getMyComplaints = async (req, res) => {
   }
 };
 
-// Get owner complaints
 export const getOwnerComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.find({
@@ -138,7 +132,6 @@ export const getOwnerComplaints = async (req, res) => {
   }
 };
 
-// Get all complaints for admin
 export const getAllComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.find()
@@ -162,7 +155,6 @@ export const getAllComplaints = async (req, res) => {
   }
 };
 
-// Update complaint status
 export const updateComplaintStatus = async (req, res) => {
   try {
     const { complaintId } = req.params;
@@ -187,7 +179,6 @@ export const updateComplaintStatus = async (req, res) => {
       });
     }
 
-    // Owner or admin can update
     const isOwner = complaint.owner.toString() === req.user._id.toString();
 
     const isAdmin = req.user.role === "admin";
@@ -213,7 +204,6 @@ export const updateComplaintStatus = async (req, res) => {
       .populate("tenant", "name email")
       .populate("owner", "name email");
 
-    // Notify tenant
     try {
       await createNotification({
         recipient: complaint.tenant,

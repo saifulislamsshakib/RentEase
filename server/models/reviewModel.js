@@ -32,7 +32,6 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
-// One tenant can review a property only once
 reviewSchema.index({ property: 1, tenant: 1 }, { unique: true });
 
 const Review = mongoose.model("Review", reviewSchema);

@@ -4,7 +4,6 @@ import Property from "../models/propertyModel.js";
 import cloudinary from "../config/cloudinary.js";
 import { createNotification } from "./notificationController.js";
 
-// Upload image to Cloudinary
 const uploadImageToCloudinary = (file) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -25,7 +24,6 @@ const uploadImageToCloudinary = (file) => {
   });
 };
 
-// Create maintenance request
 export const createMaintenance = async (req, res) => {
   try {
     const { propertyId } = req.params;
@@ -39,7 +37,6 @@ export const createMaintenance = async (req, res) => {
       });
     }
 
-    // Check property
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -49,7 +46,6 @@ export const createMaintenance = async (req, res) => {
       });
     }
 
-    // Find active contract for tenant
     const contract = await Contract.findOne({
       property: propertyId,
       tenant: req.user._id,
@@ -64,7 +60,6 @@ export const createMaintenance = async (req, res) => {
       });
     }
 
-    // Upload images
     const imageUrls = [];
 
     if (req.files && req.files.length > 0) {
@@ -94,7 +89,6 @@ export const createMaintenance = async (req, res) => {
       .populate("tenant", "name email")
       .populate("owner", "name email");
 
-    // Notify owner
     try {
       await createNotification({
         recipient: contract.owner._id,
@@ -125,7 +119,6 @@ export const createMaintenance = async (req, res) => {
   }
 };
 
-// Get tenant maintenance requests
 export const getMyMaintenance = async (req, res) => {
   try {
     const maintenance = await Maintenance.find({
@@ -150,7 +143,6 @@ export const getMyMaintenance = async (req, res) => {
   }
 };
 
-// Get owner maintenance requests
 export const getOwnerMaintenance = async (req, res) => {
   try {
     const maintenance = await Maintenance.find({
@@ -175,7 +167,6 @@ export const getOwnerMaintenance = async (req, res) => {
   }
 };
 
-// Get all maintenance requests for admin
 export const getAllMaintenance = async (req, res) => {
   try {
     const maintenance = await Maintenance.find()
@@ -199,7 +190,6 @@ export const getAllMaintenance = async (req, res) => {
   }
 };
 
-// Update maintenance status
 export const updateMaintenanceStatus = async (req, res) => {
   try {
     const { maintenanceId } = req.params;
@@ -224,7 +214,6 @@ export const updateMaintenanceStatus = async (req, res) => {
       });
     }
 
-    // Only property owner can update
     if (maintenance.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -246,7 +235,6 @@ export const updateMaintenanceStatus = async (req, res) => {
       .populate("tenant", "name email")
       .populate("owner", "name email");
 
-    // Notify tenant
     try {
       await createNotification({
         recipient: maintenance.tenant,

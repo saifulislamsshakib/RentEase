@@ -14,13 +14,11 @@ const applicationSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Tenant's preferred rental start date
     preferredStartDate: {
       type: Date,
       required: true,
     },
 
-    // How many months the tenant wants to rent
     rentalDuration: {
       type: Number,
       required: true,

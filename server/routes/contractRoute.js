@@ -16,21 +16,12 @@ import {
 
 const router = express.Router();
 
-// ==========================================
-// TENANT
-// ==========================================
-
-// Get logged-in tenant's contracts
 router.get(
   "/my-contracts",
   isAuthenticated,
   authorizeRoles("tenant"),
   getMyContracts,
 );
-
-// ==========================================
-// OWNER
-// ==========================================
 
 // Get owner's contracts
 router.get(
@@ -40,20 +31,12 @@ router.get(
   getOwnerContracts,
 );
 
-// ==========================================
-// CREATE CONTRACT
-// ==========================================
-
 router.post(
   "/create",
   isAuthenticated,
   authorizeRoles("owner"),
   createContract,
 );
-
-// ==========================================
-// UPDATE CONTRACT STATUS
-// ==========================================
 
 router.put(
   "/:contractId/status",
@@ -62,21 +45,12 @@ router.put(
   updateContractStatus,
 );
 
-// ==========================================
-// DELETE CONTRACT
-// ==========================================
-
 router.delete(
   "/:contractId",
   isAuthenticated,
   authorizeRoles("owner"),
   deleteContract,
 );
-
-// ==========================================
-// GET SINGLE CONTRACT
-// IMPORTANT: Keep this route LAST
-// ==========================================
 
 router.get("/:contractId", isAuthenticated, getSingleContract);
 

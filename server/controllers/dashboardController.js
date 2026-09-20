@@ -2,8 +2,6 @@ import User from "../models/userModel.js";
 import Property from "../models/propertyModel.js";
 import Application from "../models/applicationModel.js";
 
-// Admin Dashboard Statistics
-
 export const getAdminDashboardStats = async (req, res) => {
   try {
     const [
@@ -67,18 +65,15 @@ export const getAdminDashboardStats = async (req, res) => {
     });
   }
 };
-// Owner Dashboard Statistics
 
 export const getOwnerDashboardStats = async (req, res) => {
   try {
-    // Find all properties of logged-in owner
     const properties = await Property.find({
       owner: req.user._id,
     }).select("_id isAvailable");
 
     const propertyIds = properties.map((property) => property._id);
 
-    // Property statistics
     const totalProperties = properties.length;
 
     const availableProperties = properties.filter(
@@ -89,7 +84,6 @@ export const getOwnerDashboardStats = async (req, res) => {
       (property) => property.isAvailable === false,
     ).length;
 
-    // Application statistics for owner's properties
     const [
       totalApplications,
       pendingApplications,
@@ -149,7 +143,6 @@ export const getOwnerDashboardStats = async (req, res) => {
     });
   }
 };
-// Tenant Dashboard Statistics
 
 export const getTenantDashboardStats = async (req, res) => {
   try {

@@ -4,10 +4,6 @@ import Application from "../models/applicationModel.js";
 import Payment from "../models/paymentModel.js";
 import { createNotification } from "./notificationController.js";
 
-// =====================================================
-// CREATE CONTRACT - OWNER
-// =====================================================
-
 export const createContract = async (req, res) => {
   try {
     const {
@@ -23,10 +19,6 @@ export const createContract = async (req, res) => {
       termsAndConditions,
     } = req.body;
 
-    // -------------------------------------------------
-    // Validate required information
-    // -------------------------------------------------
-
     if (
       !tenant ||
       !property ||
@@ -41,10 +33,6 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Find property
-    // -------------------------------------------------
-
     const propertyData = await Property.findById(property);
 
     if (!propertyData) {
@@ -54,10 +42,6 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Check property owner
-    // -------------------------------------------------
-
     if (propertyData.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -65,10 +49,6 @@ export const createContract = async (req, res) => {
           "You are not authorized to create a contract for this property",
       });
     }
-
-    // -------------------------------------------------
-    // Check approved application
-    // -------------------------------------------------
 
     if (!application) {
       return res.status(400).json({
@@ -86,20 +66,12 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Application must be approved
-    // -------------------------------------------------
-
     if (applicationData.status !== "approved") {
       return res.status(400).json({
         success: false,
         message: "Only approved applications can be used to create a contract",
       });
     }
-
-    // -------------------------------------------------
-    // Verify application belongs to property
-    // -------------------------------------------------
 
     if (applicationData.property.toString() !== property.toString()) {
       return res.status(400).json({
@@ -108,20 +80,12 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Verify application belongs to tenant
-    // -------------------------------------------------
-
     if (applicationData.tenant.toString() !== tenant.toString()) {
       return res.status(400).json({
         success: false,
         message: "Application does not belong to this tenant",
       });
     }
-
-    // -------------------------------------------------
-    // Check active/pending contract
-    // -------------------------------------------------
 
     const existingContract = await Contract.findOne({
       tenant,
@@ -137,10 +101,6 @@ export const createContract = async (req, res) => {
         message: "A pending or active contract already exists for this tenant",
       });
     }
-
-    // -------------------------------------------------
-    // Validate dates
-    // -------------------------------------------------
 
     const parsedStartDate = new Date(startDate);
     const parsedEndDate = new Date(endDate);
@@ -162,20 +122,12 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Validate monthly rent
-    // -------------------------------------------------
-
     if (Number(monthlyRent) <= 0) {
       return res.status(400).json({
         success: false,
         message: "Monthly rent must be greater than zero",
       });
     }
-
-    // -------------------------------------------------
-    // Security deposit
-    // -------------------------------------------------
 
     const deposit = Number(securityDeposit || 0);
 
@@ -186,25 +138,7 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Create contract
-    // -------------------------------------------------
-
-    /*
-      Contract is NOT Active immediately.
-
-      If security deposit > 0:
-        status = Pending Deposit
-
-      If security deposit = 0:
-        status = Active
-    */
-
     const contractStatus = deposit > 0 ? "Pending Deposit" : "Active";
-
-    // -------------------------------------------------
-    // Property becomes unavailable
-    // -------------------------------------------------
 
     propertyData.isAvailable = false;
     await propertyData.save();
@@ -234,11 +168,6 @@ export const createContract = async (req, res) => {
 
       status: contractStatus,
     });
-
-    // -------------------------------------------------
-    // If security deposit required,
-    // automatically create pending deposit payment
-    // -------------------------------------------------
 
     if (deposit > 0) {
       await Payment.create({
@@ -273,10 +202,6 @@ export const createContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Populate contract
-    // -------------------------------------------------
-
     await contract.populate([
       {
         path: "tenant",
@@ -298,10 +223,6 @@ export const createContract = async (req, res) => {
       },
     ]);
 
-    // -------------------------------------------------
-    // Notify tenant
-    // -------------------------------------------------
-
     try {
       await createNotification({
         recipient: tenant,
@@ -320,10 +241,6 @@ export const createContract = async (req, res) => {
     } catch (notificationError) {
       console.log("Contract notification error:", notificationError.message);
     }
-
-    // -------------------------------------------------
-    // Response
-    // -------------------------------------------------
 
     return res.status(201).json({
       success: true,
@@ -344,10 +261,6 @@ export const createContract = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// GET MY CONTRACTS - TENANT
-// =====================================================
 
 export const getMyContracts = async (req, res) => {
   try {
@@ -375,10 +288,6 @@ export const getMyContracts = async (req, res) => {
   }
 };
 
-// =====================================================
-// GET OWNER CONTRACTS
-// =====================================================
-
 export const getOwnerContracts = async (req, res) => {
   try {
     const contracts = await Contract.find({
@@ -404,10 +313,6 @@ export const getOwnerContracts = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// GET SINGLE CONTRACT
-// =====================================================
 
 export const getSingleContract = async (req, res) => {
   try {
@@ -452,10 +357,6 @@ export const getSingleContract = async (req, res) => {
   }
 };
 
-// =====================================================
-// UPDATE CONTRACT STATUS - OWNER
-// =====================================================
-
 export const updateContractStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -484,20 +385,12 @@ export const updateContractStatus = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Owner authorization
-    // -------------------------------------------------
-
     if (contract.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to update this contract",
       });
     }
-
-    // -------------------------------------------------
-    // Prevent manual activation before deposit
-    // -------------------------------------------------
 
     if (status === "Active" && contract.securityDeposit > 0) {
       const depositPayment = await Payment.findOne({
@@ -517,29 +410,18 @@ export const updateContractStatus = async (req, res) => {
       }
     }
 
-    // -------------------------------------------------
-    // Update contract status
-    // -------------------------------------------------
-
     contract.status = status;
 
     await contract.save();
 
-    // -------------------------------------------------
-    // IMPORTANT:
     // If contract is Terminated,
     // property becomes available again.
-    // -------------------------------------------------
 
     if (status === "Terminated") {
       await Property.findByIdAndUpdate(contract.property, {
         isAvailable: true,
       });
     }
-
-    // -------------------------------------------------
-    // Notify tenant
-    // -------------------------------------------------
 
     try {
       await createNotification({
@@ -575,10 +457,6 @@ export const updateContractStatus = async (req, res) => {
   }
 };
 
-// =====================================================
-// DELETE CONTRACT
-// =====================================================
-
 export const deleteContract = async (req, res) => {
   try {
     const contract = await Contract.findById(req.params.contractId);
@@ -590,10 +468,6 @@ export const deleteContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Owner authorization
-    // -------------------------------------------------
-
     if (contract.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -601,17 +475,9 @@ export const deleteContract = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Delete related payments
-    // -------------------------------------------------
-
     await Payment.deleteMany({
       contract: contract._id,
     });
-
-    // -------------------------------------------------
-    // Delete contract
-    // -------------------------------------------------
 
     await contract.deleteOne();
 

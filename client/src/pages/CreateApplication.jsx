@@ -34,10 +34,6 @@ function CreateApplication() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // =====================================================
-  // Fetch Property
-  // =====================================================
-
   useEffect(() => {
     const fetchProperty = async () => {
       if (!propertyId) {
@@ -62,10 +58,6 @@ function CreateApplication() {
 
     fetchProperty();
   }, [propertyId]);
-
-  // =====================================================
-  // Submit Application
-  // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,10 +106,6 @@ function CreateApplication() {
     }
   };
 
-  // =====================================================
-  // Login Required
-  // =====================================================
-
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -138,10 +126,6 @@ function CreateApplication() {
       </div>
     );
   }
-
-  // =====================================================
-  // Tenant Only
-  // =====================================================
 
   if (user.role !== "tenant") {
     return (
@@ -165,10 +149,6 @@ function CreateApplication() {
     );
   }
 
-  // =====================================================
-  // Loading
-  // =====================================================
-
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -176,10 +156,6 @@ function CreateApplication() {
       </div>
     );
   }
-
-  // =====================================================
-  // Property Not Found
-  // =====================================================
 
   if (!property) {
     return (
@@ -203,10 +179,6 @@ function CreateApplication() {
     );
   }
 
-  // =====================================================
-  // Main Page
-  // =====================================================
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -229,10 +201,6 @@ function CreateApplication() {
       {/* Main */}
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         <div className="rounded-xl bg-white p-6 shadow-sm sm:p-8">
-          {/* =================================================
-              Success Message
-          ================================================= */}
-
           {success && (
             <div className="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-4">
               <CheckCircle
@@ -256,10 +224,6 @@ function CreateApplication() {
             </div>
           )}
 
-          {/* =================================================
-              Heading
-          ================================================= */}
-
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50">
               <FileText size={23} className="text-blue-600" />
@@ -275,10 +239,6 @@ function CreateApplication() {
               </p>
             </div>
           </div>
-
-          {/* =================================================
-              Property Summary
-          ================================================= */}
 
           <div className="mt-7 rounded-lg bg-gray-50 p-5">
             <div className="flex gap-4">
@@ -310,25 +270,13 @@ function CreateApplication() {
             </div>
           </div>
 
-          {/* =================================================
-              Error
-          ================================================= */}
-
           {error && (
             <div className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
 
-          {/* =================================================
-              Application Form
-          ================================================= */}
-
           <form onSubmit={handleSubmit} className="mt-7 space-y-6">
-            {/* =========================
-                Preferred Start Date
-            ========================= */}
-
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Preferred Rental Start Date
@@ -353,10 +301,6 @@ function CreateApplication() {
                 Select the date you want to start renting this property.
               </p>
             </div>
-
-            {/* =========================
-                Rental Duration
-            ========================= */}
 
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -387,10 +331,6 @@ function CreateApplication() {
               </p>
             </div>
 
-            {/* =========================
-                Message
-            ========================= */}
-
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Message to Owner
@@ -410,10 +350,6 @@ function CreateApplication() {
                 You can add any additional information for the property owner.
               </p>
             </div>
-
-            {/* =========================
-                Summary
-            ========================= */}
 
             {preferredStartDate && (
               <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
@@ -442,10 +378,6 @@ function CreateApplication() {
                 </div>
               </div>
             )}
-
-            {/* =========================
-                Submit Button
-            ========================= */}
 
             <button
               type="submit"

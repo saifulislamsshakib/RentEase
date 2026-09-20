@@ -1,13 +1,10 @@
 import Favorite from "../models/favoriteModel.js";
 import Property from "../models/propertyModel.js";
 
-// Add Property to Favorites
-
 export const addFavorite = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    // Check property exists
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -17,7 +14,6 @@ export const addFavorite = async (req, res) => {
       });
     }
 
-    // Check if already favorite
     const existingFavorite = await Favorite.findOne({
       tenant: req.user._id,
       property: propertyId,
@@ -30,7 +26,6 @@ export const addFavorite = async (req, res) => {
       });
     }
 
-    // Create favorite
     const favorite = await Favorite.create({
       tenant: req.user._id,
       property: propertyId,
@@ -50,8 +45,6 @@ export const addFavorite = async (req, res) => {
     });
   }
 };
-
-// Get My Favorite Properties
 
 export const getMyFavorites = async (req, res) => {
   try {
@@ -78,13 +71,11 @@ export const getMyFavorites = async (req, res) => {
     });
   }
 };
-// Remove Property from Favorites
 
 export const removeFavorite = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    // Find favorite
     const favorite = await Favorite.findOne({
       tenant: req.user._id,
       property: propertyId,
@@ -97,7 +88,6 @@ export const removeFavorite = async (req, res) => {
       });
     }
 
-    // Delete favorite
     await Favorite.findByIdAndDelete(favorite._id);
 
     res.status(200).json({

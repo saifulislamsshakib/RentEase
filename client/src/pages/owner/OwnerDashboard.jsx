@@ -217,10 +217,10 @@ function OwnerDashboard() {
             {/* PAYMENTS */}
 
             <Link
-              to="/owner/payments"
+              to="/owner/properties"
               className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
             >
-              {/* <DollarSign size={18} /> */}
+              <DollarSign size={18} />
               Payments
             </Link>
 
@@ -380,7 +380,7 @@ function OwnerDashboard() {
 
         <div className="mt-6">
           <Link
-            to="/owner/payments"
+            to="/owner/properties"
             className="block rounded-xl bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -35,10 +35,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // =====================================================
-  // FETCH ADMIN DASHBOARD DATA
-  // =====================================================
-
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -89,18 +85,10 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
-
-  // =====================================================
-  // STAT CARD
-  // =====================================================
 
   const StatCard = ({
     title,
@@ -128,10 +116,6 @@ const AdminDashboard = () => {
     );
   };
 
-  // =====================================================
-  // MANAGEMENT CARD
-  // =====================================================
-
   const ManagementCard = ({ title, description, icon: Icon, link }) => {
     return (
       <Link
@@ -157,10 +141,6 @@ const AdminDashboard = () => {
     );
   };
 
-  // =====================================================
-  // LOADING
-  // =====================================================
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -176,10 +156,6 @@ const AdminDashboard = () => {
       </div>
     );
   }
-
-  // =====================================================
-  // ERROR
-  // =====================================================
 
   if (error) {
     return (
@@ -209,16 +185,8 @@ const AdminDashboard = () => {
     );
   }
 
-  // =====================================================
-  // DASHBOARD
-  // =====================================================
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -259,13 +227,7 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* =================================================
-          MAIN
-      ================================================= */}
-
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* PAGE INTRO */}
-
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900">System Overview</h2>
 
@@ -274,10 +236,6 @@ const AdminDashboard = () => {
             activity.
           </p>
         </div>
-
-        {/* =================================================
-            STAT CARDS
-        ================================================= */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <StatCard
@@ -345,10 +303,6 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* =================================================
-            MANAGEMENT SECTION
-        ================================================= */}
-
         <div className="mb-8">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-gray-900">Management</h2>
@@ -387,10 +341,6 @@ const AdminDashboard = () => {
               link="/admin/bookings"
             />
 
-            {/* =================================================
-                REPORTS & ANALYTICS
-            ================================================= */}
-
             <ManagementCard
               title="Reports & Analytics"
               description="View system statistics and reports"
@@ -399,10 +349,6 @@ const AdminDashboard = () => {
             />
           </div>
         </div>
-
-        {/* =================================================
-            QUICK SUMMARY
-        ================================================= */}
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -423,11 +369,7 @@ const AdminDashboard = () => {
             </Link>
           </div>
 
-          {/* APPLICATION SUMMARY */}
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* TOTAL */}
-
             <div className="rounded-xl bg-gray-50 p-5">
               <div className="flex items-center justify-between">
                 <div>
@@ -486,9 +428,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* =================================================
-            REPORTS SHORTCUT
-        ================================================= */}
+        {/* REPORTS SHORTCUT */}
 
         <div className="mt-6">
           <Link

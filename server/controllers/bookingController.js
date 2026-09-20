@@ -2,13 +2,11 @@ import Booking from "../models/bookingModel.js";
 import Property from "../models/propertyModel.js";
 import { createNotification } from "./notificationController.js";
 
-// Create Property Visit Booking - Tenant
 export const createBooking = async (req, res) => {
   try {
     const { propertyId } = req.params;
     const { visitDate, message } = req.body;
 
-    // Check visit date
     if (!visitDate) {
       return res.status(400).json({
         success: false,
@@ -16,7 +14,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check property exists
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -26,7 +23,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check property availability
     if (!property.isAvailable) {
       return res.status(400).json({
         success: false,
@@ -34,7 +30,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check if visit date is in the past
     const selectedDate = new Date(visitDate);
 
     if (selectedDate <= new Date()) {
@@ -44,7 +39,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check duplicate pending booking
     const existingBooking = await Booking.findOne({
       property: propertyId,
       tenant: req.user._id,
@@ -58,14 +52,13 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Create booking
     const booking = await Booking.create({
       property: propertyId,
       tenant: req.user._id,
       visitDate: selectedDate,
       message,
     });
-    // Notify property owner
+
     await createNotification({
       recipient: property.owner,
       sender: req.user._id,
@@ -88,7 +81,6 @@ export const createBooking = async (req, res) => {
     });
   }
 };
-// Get My Bookings - Tenant
 
 export const getMyBookings = async (req, res) => {
   try {
@@ -115,19 +107,15 @@ export const getMyBookings = async (req, res) => {
     });
   }
 };
-// Get All Bookings for Owner
 
 export const getOwnerBookings = async (req, res) => {
   try {
-    // Find all properties of logged-in owner
     const properties = await Property.find({
       owner: req.user._id,
     });
 
-    // Get property IDs
     const propertyIds = properties.map((property) => property._id);
 
-    // Find bookings for owner's properties
     const bookings = await Booking.find({
       property: { $in: propertyIds },
     })
@@ -149,14 +137,12 @@ export const getOwnerBookings = async (req, res) => {
     });
   }
 };
-// Update Booking Status - Owner
 
 export const updateBookingStatus = async (req, res) => {
   try {
     const { bookingId } = req.params;
     const { status } = req.body;
 
-    // Validate status
     if (!["approved", "rejected"].includes(status)) {
       return res.status(400).json({
         success: false,
@@ -164,7 +150,6 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
-    // Find booking
     const booking = await Booking.findById(bookingId);
 
     if (!booking) {
@@ -174,7 +159,6 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
-    // Find property
     const property = await Property.findById(booking.property);
 
     if (!property) {
@@ -184,7 +168,6 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
-    // Check property owner
     if (property.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -192,7 +175,6 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
-    // Only pending booking can be updated
     if (booking.status !== "pending") {
       return res.status(400).json({
         success: false,
@@ -200,11 +182,9 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
-    // Update booking status
     booking.status = status;
     await booking.save();
 
-    // Notify tenant
     await createNotification({
       recipient: booking.tenant,
       sender: req.user._id,
@@ -232,13 +212,10 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-// Cancel Booking - Tenant
-
 export const cancelBooking = async (req, res) => {
   try {
     const { bookingId } = req.params;
 
-    // Find booking
     const booking = await Booking.findById(bookingId);
 
     if (!booking) {
@@ -248,7 +225,6 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Check booking belongs to logged-in tenant
     if (booking.tenant.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -256,7 +232,6 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Only pending bookings can be cancelled
     if (booking.status !== "pending") {
       return res.status(400).json({
         success: false,
@@ -264,7 +239,6 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Cancel booking
     booking.status = "cancelled";
 
     await booking.save();
@@ -283,7 +257,7 @@ export const cancelBooking = async (req, res) => {
     });
   }
 };
-// Get All Bookings - Admin
+
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()

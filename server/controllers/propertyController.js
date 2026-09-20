@@ -1,7 +1,7 @@
 import Property from "../models/propertyModel.js";
 
 import cloudinary from "../config/cloudinary.js";
-// Create Property
+
 export const createProperty = async (req, res) => {
   try {
     const {
@@ -15,7 +15,6 @@ export const createProperty = async (req, res) => {
       bathrooms,
     } = req.body;
 
-    // Validation
     if (!title || !description || !propertyType || !address || !city || !rent) {
       return res.status(400).json({
         success: false,
@@ -25,7 +24,6 @@ export const createProperty = async (req, res) => {
 
     const imageUrls = [];
 
-    // Upload images to Cloudinary
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await new Promise((resolve, reject) => {
@@ -49,7 +47,6 @@ export const createProperty = async (req, res) => {
       }
     }
 
-    // Create property
     const property = await Property.create({
       title,
       description,
@@ -77,7 +74,7 @@ export const createProperty = async (req, res) => {
     });
   }
 };
-// Get All Properties
+
 export const getAllProperties = async (req, res) => {
   try {
     const {
@@ -91,23 +88,18 @@ export const getAllProperties = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Filter object
     const filter = {};
 
-    // শুধু available property দেখাবে
     filter.isAvailable = true;
 
-    // City filter
     if (city) {
       filter.city = city;
     }
 
-    // Property type filter
     if (propertyType) {
       filter.propertyType = propertyType;
     }
 
-    // Rent filter
     if (minRent || maxRent) {
       filter.rent = {};
 
@@ -120,23 +112,18 @@ export const getAllProperties = async (req, res) => {
       }
     }
 
-    // Bedrooms filter
     if (bedrooms) {
       filter.bedrooms = Number(bedrooms);
     }
 
-    // Bathrooms filter
     if (bathrooms) {
       filter.bathrooms = Number(bathrooms);
     }
 
-    // Pagination
     const skip = (Number(page) - 1) * Number(limit);
 
-    // Total properties
     const totalProperties = await Property.countDocuments(filter);
 
-    // Get properties
     const properties = await Property.find(filter)
       .populate("owner", "name email phone")
       .skip(skip)
@@ -165,7 +152,7 @@ export const getAllProperties = async (req, res) => {
     });
   }
 };
-// Get Single Property
+
 export const getSingleProperty = async (req, res) => {
   try {
     const { id } = req.params;
@@ -195,7 +182,7 @@ export const getSingleProperty = async (req, res) => {
     });
   }
 };
-// Update Property
+
 export const updateProperty = async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -207,7 +194,6 @@ export const updateProperty = async (req, res) => {
       });
     }
 
-    // শুধু নিজের property update করতে পারবে
     if (property.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -226,7 +212,6 @@ export const updateProperty = async (req, res) => {
       bathrooms,
     } = req.body;
 
-    // যেসব field পাঠানো হবে শুধু সেগুলো update হবে
     if (title) property.title = title;
     if (description) property.description = description;
     if (propertyType) property.propertyType = propertyType;
@@ -236,7 +221,6 @@ export const updateProperty = async (req, res) => {
     if (bedrooms) property.bedrooms = bedrooms;
     if (bathrooms) property.bathrooms = bathrooms;
 
-    // নতুন image upload
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await new Promise((resolve, reject) => {
@@ -276,15 +260,13 @@ export const updateProperty = async (req, res) => {
     });
   }
 };
-// Delete Property
+
 export const deleteProperty = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find property
     const property = await Property.findById(id);
 
-    // Check property exists
     if (!property) {
       return res.status(404).json({
         success: false,
@@ -292,7 +274,6 @@ export const deleteProperty = async (req, res) => {
       });
     }
 
-    // Check property owner
     if (property.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -300,7 +281,6 @@ export const deleteProperty = async (req, res) => {
       });
     }
 
-    // Delete property
     await Property.findByIdAndDelete(id);
 
     res.status(200).json({
@@ -316,7 +296,7 @@ export const deleteProperty = async (req, res) => {
     });
   }
 };
-// Get My Properties
+
 export const getMyProperties = async (req, res) => {
   try {
     const properties = await Property.find({
@@ -337,14 +317,12 @@ export const getMyProperties = async (req, res) => {
     });
   }
 };
-// Delete Property Image - Owner
 
 export const deletePropertyImage = async (req, res) => {
   try {
     const { id } = req.params;
     const { imageUrl } = req.body;
 
-    // Validate image URL
     if (!imageUrl) {
       return res.status(400).json({
         success: false,
@@ -352,7 +330,6 @@ export const deletePropertyImage = async (req, res) => {
       });
     }
 
-    // Find property
     const property = await Property.findById(id);
 
     if (!property) {
@@ -362,7 +339,6 @@ export const deletePropertyImage = async (req, res) => {
       });
     }
 
-    // Check property owner
     if (property.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -370,7 +346,6 @@ export const deletePropertyImage = async (req, res) => {
       });
     }
 
-    // Check image exists in property
     if (!property.images.includes(imageUrl)) {
       return res.status(404).json({
         success: false,
@@ -378,7 +353,6 @@ export const deletePropertyImage = async (req, res) => {
       });
     }
 
-    // Extract Cloudinary public ID
     const uploadMarker = "/upload/";
     const uploadIndex = imageUrl.indexOf(uploadMarker);
 
@@ -391,16 +365,12 @@ export const deletePropertyImage = async (req, res) => {
 
     let publicId = imageUrl.substring(uploadIndex + uploadMarker.length);
 
-    // Remove version from URL
     publicId = publicId.replace(/^v\d+\//, "");
 
-    // Remove file extension
     publicId = publicId.replace(/\.[^/.]+$/, "");
 
-    // Delete image from Cloudinary
     await cloudinary.uploader.destroy(publicId);
 
-    // Remove image URL from database
     property.images = property.images.filter((image) => image !== imageUrl);
 
     await property.save();
@@ -419,7 +389,6 @@ export const deletePropertyImage = async (req, res) => {
     });
   }
 };
-// Get All Properties - Admin
 
 export const getAllPropertiesAdmin = async (req, res) => {
   try {

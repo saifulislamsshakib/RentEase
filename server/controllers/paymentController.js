@@ -3,11 +3,6 @@ import Contract from "../models/contractModel.js";
 
 import { createNotification } from "./notificationController.js";
 
-// =====================================================
-// CREATE PAYMENT - OWNER
-// Used mainly for monthly rent records
-// =====================================================
-
 export const createPayment = async (req, res) => {
   try {
     const { contractId } = req.params;
@@ -23,10 +18,6 @@ export const createPayment = async (req, res) => {
       type,
     } = req.body;
 
-    // -------------------------------------------------
-    // Find contract
-    // -------------------------------------------------
-
     const contract = await Contract.findById(contractId)
       .populate("tenant", "name email")
       .populate("owner", "name email")
@@ -39,20 +30,12 @@ export const createPayment = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Only owner can create normal payment record
-    // -------------------------------------------------
-
     if (contract.owner._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to create payment for this contract",
       });
     }
-
-    // -------------------------------------------------
-    // Validate amount
-    // -------------------------------------------------
 
     if (!amount || Number(amount) <= 0) {
       return res.status(400).json({
@@ -61,10 +44,6 @@ export const createPayment = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Validate due date
-    // -------------------------------------------------
-
     if (!dueDate) {
       return res.status(400).json({
         success: false,
@@ -72,16 +51,8 @@ export const createPayment = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Payment type
-    // -------------------------------------------------
-
     const paymentType =
       type === "security_deposit" ? "security_deposit" : "rent";
-
-    // -------------------------------------------------
-    // Create payment
-    // -------------------------------------------------
 
     const payment = await Payment.create({
       contract: contract._id,
@@ -103,19 +74,11 @@ export const createPayment = async (req, res) => {
       paidDate: status === "paid" ? paidDate || new Date() : null,
     });
 
-    // -------------------------------------------------
-    // Populate
-    // -------------------------------------------------
-
     const populatedPayment = await Payment.findById(payment._id)
       .populate("contract")
       .populate("property")
       .populate("tenant", "name email")
       .populate("owner", "name email phone paymentInformation");
-
-    // -------------------------------------------------
-    // Notification
-    // -------------------------------------------------
 
     try {
       await createNotification({
@@ -151,21 +114,10 @@ export const createPayment = async (req, res) => {
   }
 };
 
-// =====================================================
-// TENANT SUBMITS SECURITY DEPOSIT
-// =====================================================
-// =====================================================
-// TENANT SUBMITS SECURITY DEPOSIT
-// =====================================================
-
 export const submitSecurityDeposit = async (req, res) => {
   try {
     const { contractId } = req.params;
     const { paymentMethod, reference, note } = req.body;
-
-    // -------------------------------------------------
-    // Find contract
-    // -------------------------------------------------
 
     const contract = await Contract.findById(contractId)
       .populate("tenant", "name email")
@@ -179,20 +131,12 @@ export const submitSecurityDeposit = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Check tenant
-    // -------------------------------------------------
-
     if (contract.tenant._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to make payment for this contract",
       });
     }
-
-    // -------------------------------------------------
-    // Security deposit required
-    // -------------------------------------------------
 
     if (!contract.securityDeposit || Number(contract.securityDeposit) <= 0) {
       return res.status(400).json({
@@ -201,15 +145,11 @@ export const submitSecurityDeposit = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Find the payment already created with contract
-    // -------------------------------------------------
-
     const payment = await Payment.findOne({
       contract: contract._id,
       type: "security_deposit",
       status: {
-        $in: ["pending", "overdue"],
+        $in: ["pending", "overdue", "rejected"],
       },
     });
 
@@ -220,23 +160,14 @@ export const submitSecurityDeposit = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
-    // Update tenant payment information
-    // -------------------------------------------------
-
     payment.paymentMethod = paymentMethod || "other";
     payment.reference = reference || "";
     payment.note = note || "";
 
-    // Keep pending until owner verifies it
     payment.status = "pending";
     payment.paidDate = null;
 
     await payment.save();
-
-    // -------------------------------------------------
-    // Notify owner
-    // -------------------------------------------------
 
     try {
       await createNotification({
@@ -253,10 +184,7 @@ export const submitSecurityDeposit = async (req, res) => {
       );
     }
 
-    // -------------------------------------------------
     // Get updated payment
-    // -------------------------------------------------
-
     const updatedPayment = await Payment.findById(payment._id)
       .populate("contract")
       .populate("property")
@@ -278,17 +206,10 @@ export const submitSecurityDeposit = async (req, res) => {
     });
   }
 };
-// =====================================================
-// GET TENANT PAYMENTS
-// =====================================================
 
 export const getMyPayments = async (req, res) => {
   try {
     const today = new Date();
-
-    // -------------------------------------------------
-    // Mark overdue
-    // -------------------------------------------------
 
     await Payment.updateMany(
       {
@@ -306,10 +227,6 @@ export const getMyPayments = async (req, res) => {
         },
       },
     );
-
-    // -------------------------------------------------
-    // Get payments
-    // -------------------------------------------------
 
     const payments = await Payment.find({
       tenant: req.user._id,
@@ -335,17 +252,9 @@ export const getMyPayments = async (req, res) => {
   }
 };
 
-// =====================================================
-// GET OWNER PAYMENTS
-// =====================================================
-
 export const getOwnerPayments = async (req, res) => {
   try {
     const today = new Date();
-
-    // -------------------------------------------------
-    // Mark overdue
-    // -------------------------------------------------
 
     await Payment.updateMany(
       {
@@ -363,10 +272,6 @@ export const getOwnerPayments = async (req, res) => {
         },
       },
     );
-
-    // -------------------------------------------------
-    // Get payments
-    // -------------------------------------------------
 
     const payments = await Payment.find({
       owner: req.user._id,
@@ -391,10 +296,6 @@ export const getOwnerPayments = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// GET ALL PAYMENTS - ADMIN
-// =====================================================
 
 export const getAllPayments = async (req, res) => {
   try {
@@ -438,18 +339,219 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
-// =====================================================
-// UPDATE PAYMENT - OWNER
-// =====================================================
+// export const updatePayment = async (req, res) => {
+//   try {
+//     const { paymentId } = req.params;
+
+//     // -------------------------------------------------
+//     // Find payment
+//     // -------------------------------------------------
+
+//     const payment = await Payment.findById(paymentId);
+
+//     if (!payment) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Payment not found",
+//       });
+//     }
+
+//     // -------------------------------------------------
+//     // Only owner can update
+//     // -------------------------------------------------
+
+//     if (payment.owner.toString() !== req.user._id.toString()) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "You are not authorized to update this payment",
+//       });
+//     }
+
+//     const {
+//       amount,
+//       dueDate,
+//       paymentMethod,
+//       reference,
+//       note,
+//       status,
+//       paidDate,
+//     } = req.body;
+
+//     // -------------------------------------------------
+//     // Update amount
+//     // -------------------------------------------------
+
+//     if (amount !== undefined) {
+//       if (Number(amount) <= 0) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Payment amount must be greater than zero",
+//         });
+//       }
+
+//       payment.amount = Number(amount);
+//     }
+
+//     // -------------------------------------------------
+//     // Update due date
+//     // -------------------------------------------------
+
+//     if (dueDate !== undefined) {
+//       payment.dueDate = dueDate;
+//     }
+
+//     // -------------------------------------------------
+//     // Update payment method
+//     // -------------------------------------------------
+
+//     if (paymentMethod !== undefined) {
+//       payment.paymentMethod = paymentMethod;
+//     }
+
+//     // -------------------------------------------------
+//     // Update reference
+//     // -------------------------------------------------
+
+//     if (reference !== undefined) {
+//       payment.reference = reference;
+//     }
+
+//     // -------------------------------------------------
+//     // Update note
+//     // -------------------------------------------------
+
+//     if (note !== undefined) {
+//       payment.note = note;
+//     }
+
+//     // -------------------------------------------------
+//     // Update status
+//     // -------------------------------------------------
+
+//     if (status !== undefined) {
+//       const allowedStatuses = ["pending", "paid", "overdue", "cancelled"];
+
+//       if (!allowedStatuses.includes(status)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Invalid payment status",
+//         });
+//       }
+
+//       payment.status = status;
+
+//       if (status === "paid") {
+//         payment.paidDate = paidDate || new Date();
+//       } else {
+//         payment.paidDate = null;
+//       }
+//     }
+
+//     // -------------------------------------------------
+//     // Save payment
+//     // -------------------------------------------------
+
+//     await payment.save();
+
+//     // =====================================================
+//     // SECURITY DEPOSIT CONFIRMED
+//     // Automatically activate contract
+//     // =====================================================
+
+//     if (payment.type === "security_deposit" && payment.status === "paid") {
+//       const contract = await Contract.findById(payment.contract);
+
+//       if (!contract) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "Payment updated, but associated contract was not found",
+//         });
+//       }
+
+//       // -------------------------------------------------
+//       // Activate contract
+//       // -------------------------------------------------
+
+//       contract.status = "Active";
+
+//       await contract.save();
+
+//       // -------------------------------------------------
+//       // Notify tenant
+//       // -------------------------------------------------
+
+//       try {
+//         await createNotification({
+//           recipient: payment.tenant,
+
+//           sender: req.user._id,
+
+//           type: "payment_recorded",
+
+//           message:
+//             "Your security deposit has been confirmed by the property owner. Your rental contract is now Active.",
+
+//           property: payment.property,
+//         });
+//       } catch (notificationError) {
+//         console.error("Deposit notification error:", notificationError.message);
+//       }
+//     } else {
+//       // =================================================
+//       // NORMAL PAYMENT NOTIFICATION
+//       // =================================================
+
+//       try {
+//         await createNotification({
+//           recipient: payment.tenant,
+
+//           sender: req.user._id,
+
+//           type: "payment_recorded",
+
+//           message: `Your ${
+//             payment.type === "security_deposit"
+//               ? "security deposit"
+//               : "rent payment"
+//           } status has been updated to ${payment.status}.`,
+
+//           property: payment.property,
+//         });
+//       } catch (notificationError) {
+//         console.error("Payment notification error:", notificationError.message);
+//       }
+//     }
+
+//     // -------------------------------------------------
+//     // Get updated payment
+//     // -------------------------------------------------
+
+//     const updatedPayment = await Payment.findById(payment._id)
+//       .populate("contract")
+//       .populate("property")
+//       .populate("tenant", "name email")
+//       .populate("owner", "name email phone paymentInformation");
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Payment updated successfully",
+//       payment: updatedPayment,
+//     });
+//   } catch (error) {
+//     console.error("Update payment error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 
 export const updatePayment = async (req, res) => {
   try {
     const { paymentId } = req.params;
 
-    // -------------------------------------------------
     // Find payment
-    // -------------------------------------------------
-
     const payment = await Payment.findById(paymentId);
 
     if (!payment) {
@@ -459,10 +561,7 @@ export const updatePayment = async (req, res) => {
       });
     }
 
-    // -------------------------------------------------
     // Only owner can update
-    // -------------------------------------------------
-
     if (payment.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -480,10 +579,7 @@ export const updatePayment = async (req, res) => {
       paidDate,
     } = req.body;
 
-    // -------------------------------------------------
     // Update amount
-    // -------------------------------------------------
-
     if (amount !== undefined) {
       if (Number(amount) <= 0) {
         return res.status(400).json({
@@ -495,44 +591,35 @@ export const updatePayment = async (req, res) => {
       payment.amount = Number(amount);
     }
 
-    // -------------------------------------------------
     // Update due date
-    // -------------------------------------------------
-
     if (dueDate !== undefined) {
       payment.dueDate = dueDate;
     }
 
-    // -------------------------------------------------
     // Update payment method
-    // -------------------------------------------------
-
     if (paymentMethod !== undefined) {
       payment.paymentMethod = paymentMethod;
     }
 
-    // -------------------------------------------------
     // Update reference
-    // -------------------------------------------------
-
     if (reference !== undefined) {
       payment.reference = reference;
     }
 
-    // -------------------------------------------------
     // Update note
-    // -------------------------------------------------
-
     if (note !== undefined) {
       payment.note = note;
     }
 
-    // -------------------------------------------------
     // Update status
-    // -------------------------------------------------
-
     if (status !== undefined) {
-      const allowedStatuses = ["pending", "paid", "overdue", "cancelled"];
+      const allowedStatuses = [
+        "pending",
+        "paid",
+        "overdue",
+        "cancelled",
+        "rejected",
+      ];
 
       if (!allowedStatuses.includes(status)) {
         return res.status(400).json({
@@ -550,16 +637,7 @@ export const updatePayment = async (req, res) => {
       }
     }
 
-    // -------------------------------------------------
-    // Save payment
-    // -------------------------------------------------
-
     await payment.save();
-
-    // =====================================================
-    // SECURITY DEPOSIT CONFIRMED
-    // Automatically activate contract
-    // =====================================================
 
     if (payment.type === "security_deposit" && payment.status === "paid") {
       const contract = await Contract.findById(payment.contract);
@@ -571,63 +649,60 @@ export const updatePayment = async (req, res) => {
         });
       }
 
-      // -------------------------------------------------
       // Activate contract
-      // -------------------------------------------------
-
       contract.status = "Active";
 
       await contract.save();
 
-      // -------------------------------------------------
       // Notify tenant
-      // -------------------------------------------------
-
       try {
         await createNotification({
           recipient: payment.tenant,
-
           sender: req.user._id,
-
           type: "payment_recorded",
-
           message:
             "Your security deposit has been confirmed by the property owner. Your rental contract is now Active.",
-
           property: payment.property,
         });
       } catch (notificationError) {
         console.error("Deposit notification error:", notificationError.message);
       }
-    } else {
-      // =================================================
-      // NORMAL PAYMENT NOTIFICATION
-      // =================================================
-
+    } else if (
+      payment.type === "security_deposit" &&
+      payment.status === "rejected"
+    ) {
       try {
         await createNotification({
           recipient: payment.tenant,
-
           sender: req.user._id,
-
           type: "payment_recorded",
-
+          message:
+            "Your security deposit payment has been rejected by the property owner. Please review your payment details and submit the security deposit again.",
+          property: payment.property,
+        });
+      } catch (notificationError) {
+        console.error(
+          "Rejected deposit notification error:",
+          notificationError.message,
+        );
+      }
+    } else {
+      try {
+        await createNotification({
+          recipient: payment.tenant,
+          sender: req.user._id,
+          type: "payment_recorded",
           message: `Your ${
             payment.type === "security_deposit"
               ? "security deposit"
               : "rent payment"
           } status has been updated to ${payment.status}.`,
-
           property: payment.property,
         });
       } catch (notificationError) {
         console.error("Payment notification error:", notificationError.message);
       }
     }
-
-    // -------------------------------------------------
-    // Get updated payment
-    // -------------------------------------------------
 
     const updatedPayment = await Payment.findById(payment._id)
       .populate("contract")

@@ -1,14 +1,11 @@
 import Review from "../models/reviewModel.js";
 import Property from "../models/propertyModel.js";
 
-// Create Review - Tenant
-
 export const createReview = async (req, res) => {
   try {
     const { propertyId } = req.params;
     const { rating, comment } = req.body;
 
-    // Validation
     if (!rating || !comment) {
       return res.status(400).json({
         success: false,
@@ -16,7 +13,6 @@ export const createReview = async (req, res) => {
       });
     }
 
-    // Validate rating
     if (Number(rating) < 1 || Number(rating) > 5) {
       return res.status(400).json({
         success: false,
@@ -24,7 +20,6 @@ export const createReview = async (req, res) => {
       });
     }
 
-    // Check property exists
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -34,7 +29,6 @@ export const createReview = async (req, res) => {
       });
     }
 
-    // Check duplicate review
     const existingReview = await Review.findOne({
       property: propertyId,
       tenant: req.user._id,
@@ -47,7 +41,6 @@ export const createReview = async (req, res) => {
       });
     }
 
-    // Create review
     const review = await Review.create({
       property: propertyId,
       tenant: req.user._id,
@@ -55,7 +48,6 @@ export const createReview = async (req, res) => {
       comment,
     });
 
-    // Populate tenant information
     await review.populate("tenant", "name email");
 
     res.status(201).json({
@@ -72,13 +64,11 @@ export const createReview = async (req, res) => {
     });
   }
 };
-// Get Reviews for a Property
 
 export const getPropertyReviews = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    // Check property exists
     const property = await Property.findById(propertyId);
 
     if (!property) {
@@ -88,14 +78,12 @@ export const getPropertyReviews = async (req, res) => {
       });
     }
 
-    // Get reviews
     const reviews = await Review.find({
       property: propertyId,
     })
       .populate("tenant", "name profileImage")
       .sort({ createdAt: -1 });
 
-    // Calculate average rating
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
 
     const averageRating =
@@ -118,14 +106,12 @@ export const getPropertyReviews = async (req, res) => {
     });
   }
 };
-// Update Own Review - Tenant
 
 export const updateReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { rating, comment } = req.body;
 
-    // Find review
     const review = await Review.findById(reviewId);
 
     if (!review) {
@@ -135,7 +121,6 @@ export const updateReview = async (req, res) => {
       });
     }
 
-    // Check review owner
     if (review.tenant.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -143,7 +128,6 @@ export const updateReview = async (req, res) => {
       });
     }
 
-    // Validate rating if provided
     if (rating !== undefined && (Number(rating) < 1 || Number(rating) > 5)) {
       return res.status(400).json({
         success: false,
@@ -151,7 +135,6 @@ export const updateReview = async (req, res) => {
       });
     }
 
-    // Update fields
     if (rating !== undefined) {
       review.rating = Number(rating);
     }
@@ -178,13 +161,11 @@ export const updateReview = async (req, res) => {
     });
   }
 };
-// Delete Own Review - Tenant
 
 export const deleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
 
-    // Find review
     const review = await Review.findById(reviewId);
 
     if (!review) {
@@ -194,7 +175,6 @@ export const deleteReview = async (req, res) => {
       });
     }
 
-    // Check review owner
     if (review.tenant.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -202,7 +182,6 @@ export const deleteReview = async (req, res) => {
       });
     }
 
-    // Delete review
     await Review.findByIdAndDelete(reviewId);
 
     res.status(200).json({
