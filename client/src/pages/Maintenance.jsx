@@ -16,10 +16,6 @@ import {
 import api from "../services/api";
 
 const Maintenance = () => {
-  // ==================================================
-  // STATE
-  // ==================================================
-
   const [contracts, setContracts] = useState([]);
   const [requests, setRequests] = useState([]);
 
@@ -33,22 +29,12 @@ const Maintenance = () => {
 
   const [showForm, setShowForm] = useState(false);
 
-  // ==================================================
-  // FORM DATA
-  // IMPORTANT:
-  // category values must match backend enum
-  // ==================================================
-
   const [formData, setFormData] = useState({
     title: "",
     category: "other",
     description: "",
     issueDate: new Date().toISOString().split("T")[0],
   });
-
-  // ==================================================
-  // FETCH DATA
-  // ==================================================
 
   useEffect(() => {
     fetchData();
@@ -64,16 +50,8 @@ const Maintenance = () => {
         api.get("/maintenance/my"),
       ]);
 
-      // ==================================================
-      // GET CONTRACTS
-      // ==================================================
-
       const contractsData =
         contractResponse.data?.contracts || contractResponse.data?.data || [];
-
-      // ==================================================
-      // ONLY ACTIVE CONTRACTS
-      // ==================================================
 
       const activeContracts = contractsData.filter(
         (contract) =>
@@ -82,19 +60,11 @@ const Maintenance = () => {
 
       setContracts(activeContracts);
 
-      // ==================================================
-      // SELECT FIRST ACTIVE CONTRACT
-      // ==================================================
-
       if (activeContracts.length > 0) {
         setSelectedContract(activeContracts[0]);
       } else {
         setSelectedContract(null);
       }
-
-      // ==================================================
-      // GET MAINTENANCE REQUESTS
-      // ==================================================
 
       const maintenanceData =
         maintenanceResponse.data?.maintenance ||
@@ -116,10 +86,6 @@ const Maintenance = () => {
     }
   };
 
-  // ==================================================
-  // HANDLE INPUT CHANGE
-  // ==================================================
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -131,10 +97,6 @@ const Maintenance = () => {
     setError("");
     setSuccess("");
   };
-
-  // ==================================================
-  // OPEN FORM
-  // ==================================================
 
   const handleOpenForm = () => {
     setError("");
@@ -154,18 +116,10 @@ const Maintenance = () => {
     setShowForm(true);
   };
 
-  // ==================================================
-  // CLOSE FORM
-  // ==================================================
-
   const handleCloseForm = () => {
     setShowForm(false);
     setError("");
   };
-
-  // ==================================================
-  // SUBMIT MAINTENANCE REQUEST
-  // ==================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -173,18 +127,10 @@ const Maintenance = () => {
     setError("");
     setSuccess("");
 
-    // ==================================================
-    // ACTIVE CONTRACT CHECK
-    // ==================================================
-
     if (!selectedContract) {
       setError("You do not have an active rental contract.");
       return;
     }
-
-    // ==================================================
-    // AUTOMATIC PROPERTY ID
-    // ==================================================
 
     const propertyId =
       selectedContract.property?._id ||
@@ -198,18 +144,10 @@ const Maintenance = () => {
       return;
     }
 
-    // ==================================================
-    // TITLE VALIDATION
-    // ==================================================
-
     if (!formData.title.trim()) {
       setError("Please enter a maintenance title.");
       return;
     }
-
-    // ==================================================
-    // DESCRIPTION VALIDATION
-    // ==================================================
 
     if (!formData.description.trim()) {
       setError("Please describe the maintenance problem.");
@@ -219,25 +157,15 @@ const Maintenance = () => {
     try {
       setSubmitting(true);
 
-      // ==================================================
-      // SEND DATA
-      // ==================================================
-
       const response = await api.post(`/maintenance/create/${propertyId}`, {
         title: formData.title.trim(),
 
-        // IMPORTANT:
-        // This sends lowercase enum value
         category: formData.category,
 
         description: formData.description.trim(),
 
         issueDate: formData.issueDate || new Date().toISOString().split("T")[0],
       });
-
-      // ==================================================
-      // SUCCESS
-      // ==================================================
 
       if (response.data?.success) {
         setSuccess("Maintenance request submitted successfully.");
@@ -269,10 +197,6 @@ const Maintenance = () => {
       setSubmitting(false);
     }
   };
-
-  // ==================================================
-  // STATUS STYLE
-  // ==================================================
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -317,10 +241,6 @@ const Maintenance = () => {
     }
   };
 
-  // ==================================================
-  // DATE FORMAT
-  // ==================================================
-
   const formatDate = (date) => {
     if (!date) return "N/A";
 
@@ -330,10 +250,6 @@ const Maintenance = () => {
       year: "numeric",
     });
   };
-
-  // ==================================================
-  // LOADING SCREEN
-  // ==================================================
 
   if (loading) {
     return (
@@ -349,17 +265,9 @@ const Maintenance = () => {
     );
   }
 
-  // ==================================================
-  // PAGE
-  // ==================================================
-
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        {/* ==================================================
-            HEADER
-        ================================================== */}
-
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
@@ -401,10 +309,6 @@ const Maintenance = () => {
           )}
         </div>
 
-        {/* ==================================================
-            ERROR MESSAGE
-        ================================================== */}
-
         {error && (
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
             <AlertCircle size={20} className="mt-0.5 shrink-0" />
@@ -413,10 +317,6 @@ const Maintenance = () => {
           </div>
         )}
 
-        {/* ==================================================
-            SUCCESS MESSAGE
-        ================================================== */}
-
         {success && (
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
             <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
@@ -424,10 +324,6 @@ const Maintenance = () => {
             <p className="text-sm font-medium">{success}</p>
           </div>
         )}
-
-        {/* ==================================================
-            CURRENT RENTAL PROPERTY
-        ================================================== */}
 
         {selectedContract && (
           <div className="mt-7 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -467,10 +363,6 @@ const Maintenance = () => {
           </div>
         )}
 
-        {/* ==================================================
-            NO ACTIVE CONTRACT
-        ================================================== */}
-
         {contracts.length === 0 && (
           <div className="mt-7 rounded-2xl bg-white p-10 text-center shadow-sm">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-cyan-50">
@@ -495,10 +387,6 @@ const Maintenance = () => {
             </Link>
           </div>
         )}
-
-        {/* ==================================================
-            NEW REQUEST FORM
-        ================================================== */}
 
         {showForm && selectedContract && (
           <div className="mt-7 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-7">
@@ -528,10 +416,6 @@ const Maintenance = () => {
             {/* FORM */}
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              {/* ==================================================
-                  PROPERTY
-              ================================================== */}
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Property
@@ -549,10 +433,6 @@ const Maintenance = () => {
                   </p>
                 </div>
               </div>
-
-              {/* ==================================================
-                  TITLE
-              ================================================== */}
 
               <div>
                 <label
@@ -576,11 +456,6 @@ const Maintenance = () => {
                   Give a short title for the maintenance problem.
                 </p>
               </div>
-
-              {/* ==================================================
-                  CATEGORY
-                  IMPORTANT: VALUES MATCH BACKEND ENUM
-              ================================================== */}
 
               <div>
                 <label
@@ -613,10 +488,6 @@ const Maintenance = () => {
                 </select>
               </div>
 
-              {/* ==================================================
-                  ISSUE DATE
-              ================================================== */}
-
               <div>
                 <label
                   htmlFor="issueDate"
@@ -642,10 +513,6 @@ const Maintenance = () => {
                 </div>
               </div>
 
-              {/* ==================================================
-                  DESCRIPTION
-              ================================================== */}
-
               <div>
                 <label
                   htmlFor="description"
@@ -669,10 +536,6 @@ const Maintenance = () => {
                   on several times but there is no light.
                 </p>
               </div>
-
-              {/* ==================================================
-                  BUTTONS
-              ================================================== */}
 
               <div className="flex flex-col gap-3 border-t border-gray-200 pt-5 sm:flex-row sm:justify-end">
                 <button
@@ -705,10 +568,6 @@ const Maintenance = () => {
           </div>
         )}
 
-        {/* ==================================================
-            MAINTENANCE REQUEST HISTORY
-        ================================================== */}
-
         <div className="mt-8">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-gray-800">
@@ -719,10 +578,6 @@ const Maintenance = () => {
               Track the status of your submitted maintenance requests.
             </p>
           </div>
-
-          {/* ==================================================
-              NO REQUESTS
-          ================================================== */}
 
           {requests.length === 0 ? (
             <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
@@ -750,10 +605,6 @@ const Maintenance = () => {
               )}
             </div>
           ) : (
-            /* ==================================================
-                REQUEST LIST
-            ================================================== */
-
             <div className="space-y-5">
               {requests.map((request) => {
                 const statusStyle = getStatusStyle(request.status);

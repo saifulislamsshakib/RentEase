@@ -556,10 +556,6 @@ const CreatePayment = () => {
     note: "",
   });
 
-  // =====================================================
-  // LOAD ACTIVE CONTRACTS
-  // =====================================================
-
   useEffect(() => {
     fetchContracts();
   }, []);
@@ -601,17 +597,9 @@ const CreatePayment = () => {
     }
   };
 
-  // =====================================================
-  // SELECTED CONTRACT
-  // =====================================================
-
   const selectedContract = contracts.find(
     (contract) => contract._id === formData.contractId,
   );
-
-  // =====================================================
-  // HANDLE CHANGE
-  // =====================================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -624,10 +612,6 @@ const CreatePayment = () => {
     setError("");
     setSuccess("");
   };
-
-  // =====================================================
-  // CONTRACT CHANGE
-  // =====================================================
 
   const handleContractChange = (e) => {
     const contractId = e.target.value;
@@ -643,10 +627,6 @@ const CreatePayment = () => {
     setError("");
     setSuccess("");
   };
-
-  // =====================================================
-  // SUBMIT
-  // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();

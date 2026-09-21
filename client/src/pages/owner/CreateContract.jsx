@@ -39,10 +39,6 @@ function CreateContract() {
     termsAndConditions: "",
   });
 
-  // =====================================================
-  // GET OWNER APPLICATIONS
-  // =====================================================
-
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -74,10 +70,6 @@ function CreateContract() {
     fetchApplications();
   }, []);
 
-  // =====================================================
-  // FORMAT DATE FOR INPUT
-  // =====================================================
-
   const formatDateForInput = (date) => {
     if (!date) return "";
 
@@ -93,10 +85,6 @@ function CreateContract() {
 
     return `${year}-${month}-${day}`;
   };
-
-  // =====================================================
-  // CALCULATE END DATE
-  // =====================================================
 
   const calculateEndDate = (startDate, duration) => {
     if (!startDate || !duration) {
@@ -131,10 +119,6 @@ function CreateContract() {
     return formatDateForInput(date);
   };
 
-  // =====================================================
-  // INPUT CHANGE
-  // =====================================================
-
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -143,10 +127,6 @@ function CreateContract() {
       [name]: value,
     }));
   };
-
-  // =====================================================
-  // SELECT APPROVED APPLICATION
-  // =====================================================
 
   const handleApplicationChange = (event) => {
     const applicationId = event.target.value;
@@ -172,10 +152,6 @@ function CreateContract() {
       return;
     }
 
-    // -------------------------------------------------
-    // Application data
-    // -------------------------------------------------
-
     const startDate = formatDateForInput(
       selectedApplication.preferredStartDate,
     );
@@ -194,10 +170,6 @@ function CreateContract() {
 
     const monthlyRent =
       selectedApplication.property?.rent || selectedApplication.rent || "";
-
-    // -------------------------------------------------
-    // Auto-fill contract
-    // -------------------------------------------------
 
     setFormData((prev) => ({
       ...prev,
@@ -220,82 +192,46 @@ function CreateContract() {
     }));
   };
 
-  // =====================================================
-  // CREATE CONTRACT
-  // =====================================================
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setError("");
     setSuccess("");
 
-    // -------------------------------------------------
-    // Application
-    // -------------------------------------------------
-
     if (!formData.application) {
       setError("Please select an approved application.");
       return;
     }
-
-    // -------------------------------------------------
-    // Tenant
-    // -------------------------------------------------
 
     if (!formData.tenant) {
       setError("Tenant information is missing.");
       return;
     }
 
-    // -------------------------------------------------
-    // Property
-    // -------------------------------------------------
-
     if (!formData.property) {
       setError("Property information is missing.");
       return;
     }
-
-    // -------------------------------------------------
-    // Start Date
-    // -------------------------------------------------
 
     if (!formData.startDate) {
       setError("Start date is missing.");
       return;
     }
 
-    // -------------------------------------------------
-    // End Date
-    // -------------------------------------------------
-
     if (!formData.endDate) {
       setError("End date is missing.");
       return;
     }
-
-    // -------------------------------------------------
-    // Date validation
-    // -------------------------------------------------
 
     if (new Date(formData.endDate) <= new Date(formData.startDate)) {
       setError("End date must be after start date.");
       return;
     }
 
-    // -------------------------------------------------
-    // Monthly Rent
-    // -------------------------------------------------
-
     if (!formData.monthlyRent || Number(formData.monthlyRent) <= 0) {
       setError("Please enter a valid monthly rent.");
       return;
     }
-
-    // -------------------------------------------------
-    // Due Date
-    // -------------------------------------------------
 
     if (!formData.dueDate) {
       setError("Please select a rent due date.");
@@ -345,24 +281,12 @@ function CreateContract() {
     }
   };
 
-  // =====================================================
-  // SELECTED APPLICATION
-  // =====================================================
-
   const selectedApplication = applications.find(
     (application) => application._id === formData.application,
   );
 
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-5xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link
@@ -383,10 +307,6 @@ function CreateContract() {
           </div>
         </div>
       </header>
-
-      {/* =================================================
-          MAIN
-      ================================================= */}
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Error */}
@@ -410,10 +330,6 @@ function CreateContract() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* =================================================
-              APPROVED APPLICATION
-          ================================================= */}
-
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
@@ -458,10 +374,6 @@ function CreateContract() {
               </select>
             )}
           </div>
-
-          {/* =================================================
-              SELECTED APPLICATION SUMMARY
-          ================================================= */}
 
           {selectedApplication && (
             <div className="rounded-xl border border-blue-100 bg-blue-50 p-6">
@@ -538,10 +450,6 @@ function CreateContract() {
               </div>
             </div>
           )}
-
-          {/* =================================================
-              CONTRACT PERIOD
-          ================================================= */}
 
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center gap-3">
@@ -625,10 +533,6 @@ function CreateContract() {
             )}
           </div>
 
-          {/* =================================================
-              FINANCIAL INFORMATION
-          ================================================= */}
-
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center gap-3">
               <DollarSign size={20} className="text-blue-600" />
@@ -709,10 +613,6 @@ function CreateContract() {
             </div>
           </div>
 
-          {/* =================================================
-              TERMS
-          ================================================= */}
-
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <h2 className="mb-2 font-bold text-gray-800">Terms & Conditions</h2>
 
@@ -729,10 +629,6 @@ function CreateContract() {
               className="w-full resize-none rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
             />
           </div>
-
-          {/* =================================================
-              SUBMIT
-          ================================================= */}
 
           <div className="flex justify-end gap-3">
             <Link

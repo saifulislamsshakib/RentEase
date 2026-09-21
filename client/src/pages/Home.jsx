@@ -29,7 +29,6 @@ function Home() {
   const [favorites, setFavorites] = useState([]);
   const [favoriteLoading, setFavoriteLoading] = useState(null);
 
-  // Fetch properties
   useEffect(() => {
     const fetchProperties = async () => {
       try {
@@ -48,7 +47,6 @@ function Home() {
     fetchProperties();
   }, []);
 
-  // Fetch tenant favorites
   useEffect(() => {
     const fetchFavorites = async () => {
       // Only tenants should access favorites
@@ -91,7 +89,6 @@ function Home() {
     fetchFavorites();
   }, [user]);
 
-  // Search
   const handleSearch = (event) => {
     event.preventDefault();
 
@@ -108,7 +105,6 @@ function Home() {
     navigate(`/properties${params.toString() ? `?${params.toString()}` : ""}`);
   };
 
-  // Favorite
   const handleFavorite = async (propertyId) => {
     if (!user) {
       navigate("/login");
@@ -151,23 +147,13 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ================= NAVBAR ================= */}
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          {/* Logo */}
           <Link to="/" className="text-2xl font-bold text-blue-600">
             RentEase
           </Link>
 
-          {/* Navigation */}
           <nav className="hidden items-center gap-6 md:flex">
-            {/* <Link
-              to="/properties"
-              className="text-sm font-medium text-gray-600 transition hover:text-blue-600"
-            >
-              Properties
-            </Link> */}
-
             {user && (
               <>
                 <Link
@@ -182,13 +168,6 @@ function Home() {
                 >
                   Dashboard
                 </Link>
-
-                {/* <Link
-                  to="/notifications"
-                  className="text-sm font-medium text-gray-600 transition hover:text-blue-600"
-                >
-                  Notifications
-                </Link> */}
               </>
             )}
           </nav>
@@ -243,7 +222,6 @@ function Home() {
         </div>
       </header>
 
-      {/* ================= HERO ================= */}
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -283,7 +261,6 @@ function Home() {
                     />
                   </div>
 
-                  {/* Location */}
                   <div className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3">
                     <MapPin size={19} className="shrink-0 text-gray-400" />
 
@@ -307,7 +284,6 @@ function Home() {
               </form>
             </div>
 
-            {/* Hero Card */}
             <div className="relative">
               <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-blue-100 to-gray-100 p-8">
                 <div className="rounded-2xl bg-white p-6 shadow-xl">
@@ -373,7 +349,6 @@ function Home() {
         </div>
       </section>
 
-      {/* ================= STATS ================= */}
       <section className="border-y bg-gray-50">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:grid-cols-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
@@ -416,7 +391,6 @@ function Home() {
         </div>
       </section>
 
-      {/* ================= FEATURED PROPERTIES ================= */}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
@@ -440,7 +414,6 @@ function Home() {
           </Link>
         </div>
 
-        {/* Loading */}
         {loading ? (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((item) => (
@@ -577,7 +550,6 @@ function Home() {
         )}
       </section>
 
-      {/* ================= OWNER CTA ================= */}
       <section className="bg-blue-600">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-7 md:flex-row md:items-center">
@@ -604,7 +576,6 @@ function Home() {
         </div>
       </section>
 
-      {/* ================= FOOTER ================= */}
       <footer className="bg-gray-900">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-6 md:flex-row">

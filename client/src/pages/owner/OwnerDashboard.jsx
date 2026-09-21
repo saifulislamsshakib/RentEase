@@ -26,10 +26,6 @@ function OwnerDashboard() {
   const [error, setError] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(null);
 
-  // ==================================================
-  // FETCH OWNER PROPERTIES
-  // ==================================================
-
   useEffect(() => {
     const fetchMyProperties = async () => {
       try {
@@ -54,10 +50,6 @@ function OwnerDashboard() {
       setLoading(false);
     }
   }, [user]);
-
-  // ==================================================
-  // DELETE PROPERTY
-  // ==================================================
 
   const handleDelete = async (propertyId) => {
     const confirmed = window.confirm(
@@ -84,10 +76,6 @@ function OwnerDashboard() {
     }
   };
 
-  // ==================================================
-  // LOADING
-  // ==================================================
-
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -95,10 +83,6 @@ function OwnerDashboard() {
       </div>
     );
   }
-
-  // ==================================================
-  // ACCESS DENIED
-  // ==================================================
 
   if (!user || user.role !== "owner") {
     return (
@@ -121,17 +105,9 @@ function OwnerDashboard() {
     );
   }
 
-  // ==================================================
-  // PAGE
-  // ==================================================
-
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        {/* ==================================================
-            TOP NAVIGATION
-        ================================================== */}
-
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           {/* BACK HOME */}
 
@@ -236,10 +212,6 @@ function OwnerDashboard() {
           </div>
         </div>
 
-        {/* ==================================================
-            HEADER
-        ================================================== */}
-
         <div className="mt-7 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
             <Building2 size={26} className="text-blue-600" />
@@ -254,19 +226,11 @@ function OwnerDashboard() {
           </div>
         </div>
 
-        {/* ==================================================
-            ERROR
-        ================================================== */}
-
         {error && (
           <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
             {error}
           </div>
         )}
-
-        {/* ==================================================
-            SUMMARY CARDS
-        ================================================== */}
 
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* TOTAL PROPERTIES */}
@@ -341,10 +305,6 @@ function OwnerDashboard() {
           </Link>
         </div>
 
-        {/* ==================================================
-            MAINTENANCE CARD
-        ================================================== */}
-
         <div className="mt-6">
           <Link
             to="/owner/maintenance"
@@ -373,10 +333,6 @@ function OwnerDashboard() {
             </div>
           </Link>
         </div>
-
-        {/* ==================================================
-            PAYMENTS CARD
-        ================================================== */}
 
         <div className="mt-6">
           <Link

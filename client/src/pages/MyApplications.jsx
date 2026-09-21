@@ -44,9 +44,6 @@ function MyApplications() {
     }
   }, [user]);
 
-  // =========================
-  // Status Style
-  // =========================
   const getStatusStyle = (status) => {
     switch (status) {
       case "approved":
@@ -85,9 +82,6 @@ function MyApplications() {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  // =========================
-  // Login Check
-  // =========================
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -113,9 +107,6 @@ function MyApplications() {
     );
   }
 
-  // =========================
-  // Tenant Check
-  // =========================
   if (user.role !== "tenant") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -142,9 +133,6 @@ function MyApplications() {
     );
   }
 
-  // =========================
-  // Loading
-  // =========================
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">

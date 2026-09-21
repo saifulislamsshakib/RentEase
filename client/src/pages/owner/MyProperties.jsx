@@ -28,10 +28,6 @@ const MyProperties = () => {
 
   const [error, setError] = useState("");
 
-  // =====================================================
-  // FETCH DATA
-  // =====================================================
-
   const fetchData = async (showRefresh = false) => {
     try {
       if (showRefresh) {
@@ -66,10 +62,6 @@ const MyProperties = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  // =====================================================
-  // HELPERS
-  // =====================================================
 
   const getPropertyId = (property) => {
     if (!property) return null;
@@ -188,10 +180,6 @@ const MyProperties = () => {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  // =====================================================
-  // ACCEPT / REJECT SECURITY DEPOSIT
-  // =====================================================
-
   const handlePaymentStatus = async (paymentId, status) => {
     if (!paymentId) return;
 
@@ -229,10 +217,6 @@ const MyProperties = () => {
     }
   };
 
-  // =====================================================
-  // SEARCH
-  // =====================================================
-
   const filteredProperties = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
 
@@ -254,10 +238,6 @@ const MyProperties = () => {
       );
     });
   }, [properties, searchTerm]);
-
-  // =====================================================
-  // SUMMARY
-  // =====================================================
 
   const summary = useMemo(() => {
     let totalRent = 0;
@@ -294,10 +274,6 @@ const MyProperties = () => {
     };
   }, [properties, payments]);
 
-  // =====================================================
-  // LOADING
-  // =====================================================
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -309,10 +285,6 @@ const MyProperties = () => {
       </div>
     );
   }
-
-  // =====================================================
-  // PAGE
-  // =====================================================
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">

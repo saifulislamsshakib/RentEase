@@ -25,10 +25,6 @@ const OwnerMaintenance = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // ==================================================
-  // FETCH OWNER MAINTENANCE REQUESTS
-  // ==================================================
-
   const fetchMaintenance = async () => {
     try {
       setLoading(true);
@@ -55,17 +51,9 @@ const OwnerMaintenance = () => {
     }
   };
 
-  // ==================================================
-  // LOAD DATA
-  // ==================================================
-
   useEffect(() => {
     fetchMaintenance();
   }, []);
-
-  // ==================================================
-  // UPDATE STATUS
-  // ==================================================
 
   const handleStatusUpdate = async (maintenanceId, newStatus) => {
     const statusText = newStatus
@@ -108,10 +96,6 @@ const OwnerMaintenance = () => {
       setUpdatingId(null);
     }
   };
-
-  // ==================================================
-  // STATUS STYLE
-  // ==================================================
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -156,10 +140,6 @@ const OwnerMaintenance = () => {
     }
   };
 
-  // ==================================================
-  // DATE FORMAT
-  // ==================================================
-
   const formatDate = (date) => {
     if (!date) {
       return "N/A";
@@ -172,10 +152,6 @@ const OwnerMaintenance = () => {
     });
   };
 
-  // ==================================================
-  // CATEGORY FORMAT
-  // ==================================================
-
   const formatCategory = (category) => {
     if (!category) {
       return "Other";
@@ -185,10 +161,6 @@ const OwnerMaintenance = () => {
       .replaceAll("_", " ")
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
-
-  // ==================================================
-  // LOADING
-  // ==================================================
 
   if (loading) {
     return (
@@ -202,17 +174,9 @@ const OwnerMaintenance = () => {
     );
   }
 
-  // ==================================================
-  // PAGE
-  // ==================================================
-
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        {/* ==================================================
-            HEADER
-        ================================================== */}
-
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
@@ -252,10 +216,6 @@ const OwnerMaintenance = () => {
           </button>
         </div>
 
-        {/* ==================================================
-            ERROR
-        ================================================== */}
-
         {error && (
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
             <AlertCircle size={20} className="mt-0.5 shrink-0" />
@@ -264,10 +224,6 @@ const OwnerMaintenance = () => {
           </div>
         )}
 
-        {/* ==================================================
-            SUCCESS
-        ================================================== */}
-
         {success && (
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
             <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
@@ -275,10 +231,6 @@ const OwnerMaintenance = () => {
             <p className="text-sm font-medium">{success}</p>
           </div>
         )}
-
-        {/* ==================================================
-            SUMMARY
-        ================================================== */}
 
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* TOTAL */}
@@ -342,10 +294,6 @@ const OwnerMaintenance = () => {
           </div>
         </div>
 
-        {/* ==================================================
-            REQUEST LIST
-        ================================================== */}
-
         <div className="mt-8">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-gray-800">
@@ -390,10 +338,6 @@ const OwnerMaintenance = () => {
                     key={request._id}
                     className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md sm:p-6"
                   >
-                    {/* ==================================================
-                        HEADER
-                    ================================================== */}
-
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="flex gap-4">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50">
@@ -420,10 +364,6 @@ const OwnerMaintenance = () => {
                         {statusStyle.label}
                       </div>
                     </div>
-
-                    {/* ==================================================
-                        PROPERTY + TENANT
-                    ================================================== */}
 
                     <div className="mt-5 grid gap-4 md:grid-cols-2">
                       {/* PROPERTY */}
@@ -482,10 +422,6 @@ const OwnerMaintenance = () => {
                       </div>
                     </div>
 
-                    {/* ==================================================
-                        PROBLEM
-                    ================================================== */}
-
                     <div className="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-4">
                       <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                         Problem Description
@@ -495,10 +431,6 @@ const OwnerMaintenance = () => {
                         {request.description || "No description provided."}
                       </p>
                     </div>
-
-                    {/* ==================================================
-                        DETAILS
-                    ================================================== */}
 
                     <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {/* CATEGORY */}
@@ -544,10 +476,6 @@ const OwnerMaintenance = () => {
                       </div>
                     </div>
 
-                    {/* ==================================================
-                        OWNER NOTE
-                    ================================================== */}
-
                     {request.ownerNote && (
                       <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-4">
                         <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
@@ -559,10 +487,6 @@ const OwnerMaintenance = () => {
                         </p>
                       </div>
                     )}
-
-                    {/* ==================================================
-                        IMAGES
-                    ================================================== */}
 
                     {request.images?.length > 0 && (
                       <div className="mt-5">
@@ -582,10 +506,6 @@ const OwnerMaintenance = () => {
                         </div>
                       </div>
                     )}
-
-                    {/* ==================================================
-                        STATUS ACTIONS
-                    ================================================== */}
 
                     <div className="mt-6 border-t border-gray-200 pt-5">
                       <p className="mb-3 text-sm font-semibold text-gray-700">

@@ -96,7 +96,6 @@ const OwnerComplaints = () => {
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* ================= HEADER ================= */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Link
@@ -132,8 +131,6 @@ const OwnerComplaints = () => {
           </button>
         </div>
 
-        {/* ================= ALERTS ================= */}
-
         {error && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
@@ -145,8 +142,6 @@ const OwnerComplaints = () => {
             {success}
           </div>
         )}
-
-        {/* ================= SUMMARY ================= */}
 
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -190,8 +185,6 @@ const OwnerComplaints = () => {
           </div>
         </div>
 
-        {/* ================= CONTENT ================= */}
-
         {loading ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
             <RefreshCw
@@ -222,8 +215,6 @@ const OwnerComplaints = () => {
                 key={complaint._id}
                 className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
               >
-                {/* ================= TOP ================= */}
-
                 <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 lg:flex-row lg:items-start lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -255,8 +246,6 @@ const OwnerComplaints = () => {
                     {complaint.status}
                   </span>
                 </div>
-
-                {/* ================= DETAILS ================= */}
 
                 <div className="grid gap-5 border-b border-slate-100 py-5 md:grid-cols-3">
                   <div>
@@ -300,8 +289,6 @@ const OwnerComplaints = () => {
                   </div>
                 </div>
 
-                {/* ================= DESCRIPTION ================= */}
-
                 <div className="py-5">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                     Tenant Complaint
@@ -311,8 +298,6 @@ const OwnerComplaints = () => {
                     {complaint.description}
                   </p>
                 </div>
-
-                {/* ================= UPDATE ================= */}
 
                 <div className="rounded-2xl bg-slate-50 p-5">
                   <h3 className="text-sm font-bold text-slate-800">

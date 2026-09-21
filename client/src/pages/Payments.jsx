@@ -38,10 +38,6 @@ const Payments = () => {
 
   const [depositError, setDepositError] = useState("");
 
-  // =====================================================
-  // FETCH PAYMENTS
-  // =====================================================
-
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -65,10 +61,6 @@ const Payments = () => {
     }
   };
 
-  // =====================================================
-  // FORMAT DATE
-  // =====================================================
-
   const formatDate = (date) => {
     if (!date) return "N/A";
 
@@ -79,10 +71,6 @@ const Payments = () => {
     });
   };
 
-  // =====================================================
-  // FORMAT PAYMENT METHOD
-  // =====================================================
-
   const formatMethod = (method) => {
     if (!method) return "Other";
 
@@ -90,10 +78,6 @@ const Payments = () => {
       .replaceAll("_", " ")
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
-
-  // =====================================================
-  // STATUS STYLE
-  // =====================================================
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -123,10 +107,6 @@ const Payments = () => {
     }
   };
 
-  // =====================================================
-  // SECURITY DEPOSIT PAYMENTS
-  // =====================================================
-
   const securityDepositPayments = payments.filter(
     (payment) => payment.type === "security_deposit",
   );
@@ -134,10 +114,6 @@ const Payments = () => {
   const pendingSecurityDeposits = securityDepositPayments.filter(
     (payment) => payment.status === "pending" || payment.status === "overdue",
   );
-
-  // =====================================================
-  // HANDLE DEPOSIT FORM
-  // =====================================================
 
   const handleDepositChange = (e) => {
     const { name, value } = e.target;
@@ -147,10 +123,6 @@ const Payments = () => {
       [name]: value,
     }));
   };
-
-  // =====================================================
-  // SUBMIT SECURITY DEPOSIT
-  // =====================================================
 
   const handleSecurityDepositSubmit = async (contractId) => {
     try {
@@ -208,10 +180,6 @@ const Payments = () => {
     }
   };
 
-  // =====================================================
-  // SUMMARY
-  // =====================================================
-
   const totalPaid = payments
     .filter((payment) => payment.status === "paid")
     .reduce((total, payment) => total + Number(payment.amount || 0), 0);
@@ -223,10 +191,6 @@ const Payments = () => {
   const totalOverdue = payments
     .filter((payment) => payment.status === "overdue")
     .reduce((total, payment) => total + Number(payment.amount || 0), 0);
-
-  // =====================================================
-  // LOADING
-  // =====================================================
 
   if (loading) {
     return (
@@ -242,17 +206,9 @@ const Payments = () => {
     );
   }
 
-  // =====================================================
-  // UI
-  // =====================================================
-
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
-
         <div className="mb-8">
           <Link
             to="/dashboard"
@@ -284,10 +240,6 @@ const Payments = () => {
           </div>
         </div>
 
-        {/* =====================================================
-            ERROR
-        ===================================================== */}
-
         {error && (
           <div className="mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-4">
             <AlertCircle size={20} />
@@ -295,10 +247,6 @@ const Payments = () => {
             <p className="text-sm font-medium">{error}</p>
           </div>
         )}
-
-        {/* =====================================================
-            SUCCESS MESSAGE
-        ===================================================== */}
 
         {depositMessage && (
           <div className="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-4">
@@ -308,10 +256,6 @@ const Payments = () => {
           </div>
         )}
 
-        {/* =====================================================
-            DEPOSIT ERROR
-        ===================================================== */}
-
         {depositError && (
           <div className="mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-4">
             <AlertCircle size={20} />
@@ -319,10 +263,6 @@ const Payments = () => {
             <p className="text-sm font-medium">{depositError}</p>
           </div>
         )}
-
-        {/* =====================================================
-            SECURITY DEPOSIT SECTION
-        ===================================================== */}
 
         {pendingSecurityDeposits.length > 0 && (
           <div className="mb-8">
@@ -386,10 +326,6 @@ const Payments = () => {
                           </p>
                         </div>
                       </div>
-
-                      {/* =====================================================
-                            OWNER PAYMENT INFORMATION
-                        ===================================================== */}
 
                       <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
                         <div className="flex items-center gap-3 mb-5">
@@ -558,10 +494,6 @@ const Payments = () => {
                         </div>
                       </div>
 
-                      {/* =====================================================
-                            EXISTING PAYMENT
-                        ===================================================== */}
-
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         {/* Due Date */}
 
@@ -594,10 +526,6 @@ const Payments = () => {
                           </div>
                         </div>
                       </div>
-
-                      {/* =====================================================
-                            FORM
-                        ===================================================== */}
 
                       <div className="border-t border-slate-200 pt-6">
                         <h4 className="font-bold text-slate-900 mb-4">
@@ -719,10 +647,6 @@ const Payments = () => {
           </div>
         )}
 
-        {/* =====================================================
-            SUMMARY CARDS
-        ===================================================== */}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {/* Total Paid */}
 
@@ -804,10 +728,6 @@ const Payments = () => {
             </h2>
           </div>
         </div>
-
-        {/* =====================================================
-            PAYMENT HISTORY
-        ===================================================== */}
 
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           {/* Section Header */}
