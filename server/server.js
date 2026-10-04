@@ -21,21 +21,19 @@ import complaintRoute from "./routes/complaintRoute.js";
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-
 // Middleware
 app.use(express.json());
 
 // CORS
-const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
-  Boolean,
-);
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://rent-ease-chi-tawny.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests without origin
-      // Example: Postman, server-to-server requests
       if (!origin) {
         return callback(null, true);
       }
@@ -70,10 +68,8 @@ app.get("/", (req, res) => {
   res.send("RentEase API is running...");
 });
 
-// Database Connect
+// Database connection
 connectDB();
 
-// Server
-app.listen(PORT, () => {
-  console.log(`Server is listening at port: ${PORT}`);
-});
+// Export app for Vercel
+export default app;
