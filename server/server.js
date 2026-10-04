@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
 
+import express from "express";
 import connectDB from "./config/db.js";
 import cors from "cors";
+
 import userRoute from "./routes/userRoute.js";
 import propertyRoute from "./routes/propertyRoute.js";
 import applicationRoute from "./routes/applicationRoute.js";
@@ -25,16 +26,32 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 
+// CORS
+const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
+  Boolean,
+);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow requests without origin
+      // Example: Postman, server-to-server requests
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
 
 // Routes
 app.use("/api/v1/user", userRoute);
-
 app.use("/api/v1/property", propertyRoute);
 app.use("/api/v1/contract", contractRoute);
 app.use("/api/v1/payment", paymentRoute);
@@ -56,6 +73,7 @@ app.get("/", (req, res) => {
 // Database Connect
 connectDB();
 
+// Server
 app.listen(PORT, () => {
   console.log(`Server is listening at port: ${PORT}`);
 });
