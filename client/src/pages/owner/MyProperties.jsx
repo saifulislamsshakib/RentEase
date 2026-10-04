@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Building2,
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Clock3,
   DollarSign,
   Home,
@@ -21,6 +25,10 @@ const MyProperties = () => {
   const [properties, setProperties] = useState([]);
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [propertiesPerPage, setPropertiesPerPage] = useState(1);
+  const propertyListRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -274,6 +282,62 @@ const MyProperties = () => {
     };
   }, [properties, payments]);
 
+  // Reset pagination to first page when search query or items per page changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, propertiesPerPage]);
+
+  const totalProperties = filteredProperties.length;
+  const totalPages = Math.max(1, Math.ceil(totalProperties / propertiesPerPage));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedProperties = useMemo(() => {
+    const startIndex = (currentPage - 1) * propertiesPerPage;
+    return filteredProperties.slice(startIndex, startIndex + propertiesPerPage);
+  }, [filteredProperties, currentPage, propertiesPerPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+    setCurrentPage(newPage);
+    if (propertyListRef.current) {
+      propertyListRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  const getPageNumbers = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const pages = [];
+    if (currentPage <= 4) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      pages.push("...");
+      pages.push(currentPage - 1);
+      pages.push(currentPage);
+      pages.push(currentPage + 1);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -393,21 +457,65 @@ const MyProperties = () => {
           </div>
         </div>
 
-        {/* SEARCH */}
-        <div className="bg-white border rounded-xl p-4 mb-6">
-          <div className="relative max-w-md">
-            <Search
-              size={19}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+        {/* SEARCH & PAGINATION HEADER */}
+        <div className="bg-white border rounded-xl p-4 mb-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search
+                size={19}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
 
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search property..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search property..."
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
+
+            {filteredProperties.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between md:justify-end gap-4 text-sm">
+                <span className="text-gray-600 font-medium">
+                  {propertiesPerPage === 1 ? (
+                    <>
+                      Property <span className="font-bold text-gray-900">{currentPage}</span> of{" "}
+                      <span className="font-bold text-gray-900">{totalProperties}</span>
+                    </>
+                  ) : (
+                    <>
+                      Showing{" "}
+                      <span className="font-bold text-gray-900">
+                        {(currentPage - 1) * propertiesPerPage + 1}
+                      </span>
+                      -
+                      <span className="font-bold text-gray-900">
+                        {Math.min(currentPage * propertiesPerPage, totalProperties)}
+                      </span>{" "}
+                      of <span className="font-bold text-gray-900">{totalProperties}</span>
+                    </>
+                  )}
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <label htmlFor="propertiesPerPageSelect" className="text-gray-500 whitespace-nowrap text-sm">
+                    Per page:
+                  </label>
+                  <select
+                    id="propertiesPerPageSelect"
+                    value={propertiesPerPage}
+                    onChange={(e) => setPropertiesPerPage(Number(e.target.value))}
+                    className="border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white text-gray-700 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value={1}>1 property</option>
+                    <option value={2}>2 properties</option>
+                    <option value={3}>3 properties</option>
+                    <option value={5}>5 properties</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -431,8 +539,8 @@ const MyProperties = () => {
         )}
 
         {/* PROPERTY LIST */}
-        <div className="space-y-6">
-          {filteredProperties.map((property) => {
+        <div ref={propertyListRef} className="space-y-6">
+          {paginatedProperties.map((property) => {
             const propertyId = getPropertyId(property);
 
             const propertyPayments = getPropertyPayments(propertyId);
@@ -712,13 +820,13 @@ const MyProperties = () => {
                       </div>
 
                       {contractId && securityDeposit?.status === "paid" && (
-                        <a
-                          href={`/owner/payments/create?contractId=${contractId}`}
+                        <Link
+                          to={`/owner/payments/create?contractId=${contractId}`}
                           className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
                         >
                           <Plus size={17} />
                           Add Monthly Rent
-                        </a>
+                        </Link>
                       )}
                     </div>
 
@@ -735,13 +843,13 @@ const MyProperties = () => {
                           </p>
 
                           {contractId && securityDeposit?.status === "paid" && (
-                            <a
-                              href={`/owner/payments/create?contractId=${contractId}`}
+                            <Link
+                              to={`/owner/payments/create?contractId=${contractId}`}
                               className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
                             >
                               <Plus size={16} />
                               Add Monthly Rent
-                            </a>
+                            </Link>
                           )}
                         </div>
                       ) : (
@@ -810,6 +918,94 @@ const MyProperties = () => {
             );
           })}
         </div>
+
+        {/* PAGINATION CONTROLS */}
+        {filteredProperties.length > 0 && totalPages > 1 && (
+          <div className="mt-8 bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-gray-600">
+                Page <span className="font-bold text-gray-900">{currentPage}</span> of{" "}
+                <span className="font-bold text-gray-900">{totalPages}</span>
+                <span className="text-gray-400 mx-2">•</span>
+                Total <span className="font-semibold text-gray-800">{totalProperties}</span>{" "}
+                {totalProperties === 1 ? "property" : "properties"}
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                {/* FIRST PAGE */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                  title="First Page"
+                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-35 disabled:cursor-not-allowed transition"
+                >
+                  <ChevronsLeft size={18} />
+                </button>
+
+                {/* PREVIOUS PAGE */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-100 disabled:opacity-35 disabled:cursor-not-allowed transition"
+                >
+                  <ChevronLeft size={16} />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+
+                {/* PAGE NUMBERS */}
+                <div className="flex items-center gap-1">
+                  {getPageNumbers().map((page, idx) =>
+                    page === "..." ? (
+                      <span
+                        key={`ellipsis-${idx}`}
+                        className="px-2.5 py-1 text-gray-400 select-none font-medium text-sm"
+                      >
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={`page-${page}`}
+                        type="button"
+                        onClick={() => handlePageChange(page)}
+                        className={`min-w-9 h-9 px-3 rounded-lg text-sm font-semibold transition ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-500/20"
+                            : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                </div>
+
+                {/* NEXT PAGE */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-100 disabled:opacity-35 disabled:cursor-not-allowed transition"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight size={16} />
+                </button>
+
+                {/* LAST PAGE */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  title="Last Page"
+                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-35 disabled:cursor-not-allowed transition"
+                >
+                  <ChevronsRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

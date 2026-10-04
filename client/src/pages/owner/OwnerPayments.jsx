@@ -16,6 +16,8 @@ import {
   Receipt,
   ShieldCheck,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import api from "../../services/api";
 
@@ -24,6 +26,8 @@ const OwnerPayments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [confirmingId, setConfirmingId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const paymentsPerPage = 10;
 
   useEffect(() => {
     fetchPayments();
@@ -168,6 +172,13 @@ const OwnerPayments = () => {
   const totalOverdue = payments
     .filter((payment) => payment.status === "overdue")
     .reduce((total, payment) => total + Number(payment.amount || 0), 0);
+
+  const totalPages = Math.max(1, Math.ceil(payments.length / paymentsPerPage));
+
+  const paginatedPayments = payments.slice(
+    (currentPage - 1) * paymentsPerPage,
+    currentPage * paymentsPerPage,
+  );
 
   if (loading) {
     return (
@@ -355,8 +366,9 @@ const OwnerPayments = () => {
               </Link>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
-              {payments.map((payment) => {
+            <>
+              <div className="divide-y divide-slate-100">
+                {paginatedPayments.map((payment) => {
                 const statusStyle = getStatusStyle(payment.status);
 
                 const isSecurityDeposit = payment.type === "security_deposit";
@@ -588,6 +600,56 @@ const OwnerPayments = () => {
                 );
               })}
             </div>
+
+            {/* PAGINATION */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50">
+                <p className="text-sm text-slate-500">
+                  Showing{" "}
+                  <span className="font-semibold text-slate-800">
+                    {(currentPage - 1) * paymentsPerPage + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold text-slate-800">
+                    {Math.min(currentPage * paymentsPerPage, payments.length)}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-slate-800">
+                    {payments.length}
+                  </span>{" "}
+                  records
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <ChevronLeft size={16} />
+                    Previous
+                  </button>
+
+                  <span className="text-sm font-semibold text-slate-700 px-2">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    Next
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
           )}
         </div>
       </div>
